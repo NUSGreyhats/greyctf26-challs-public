@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>67 Diagnostics</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="diagnostics-page">
+    <main class="diagnostic-shell">
+      <section class="diagnostic-video" aria-label="hand tracking camera">
+        <video id="diagnosticCamera" playsinline muted></video>
+        <canvas id="diagnosticOverlay" aria-hidden="true"></canvas>
+      </section>
+
+      <section class="diagnostic-board" aria-label="gesture diagnostics">
+        <header class="diagnostic-header">
+          <div>
+            <span class="panel-title">Diagnostics</span>
+            <h1>67 gesture signal</h1>
+          </div>
+          <button id="diagnosticCameraButton" type="button">Camera</button>
+        </header>
+
+        <p id="diagnosticStatus" class="diagnostic-status">Camera tracking is ready to start.</p>
+
+        <div class="diagnostic-readouts" aria-live="polite">
+          <div>
+            <span class="label">State</span>
+            <strong id="diagnosticState">STANDBY</strong>
+          </div>
+          <div>
+            <span class="label">Delta</span>
+            <strong id="diagnosticDelta">--</strong>
+          </div>
+          <div>
+            <span class="label">Crosses</span>
+            <strong id="diagnosticCrosses">0/2</strong>
+          </div>
+          <div>
+            <span class="label">Local jumps</span>
+            <strong id="diagnosticJumps">0</strong>
+          </div>
+          <div>
+            <span class="label">Server flaps</span>
+            <strong id="diagnosticServerFlaps">0</strong>
+          </div>
+        </div>
+
+        <div class="diagnostic-graph-wrap">
+          <canvas id="signalGraph" width="920" height="310" aria-label="gesture signal graph"></canvas>
+        </div>
+
+        <div class="diagnostic-controls" aria-label="detector tuning">
+          <label>
+            <span>Neutral delta band</span>
+            <input id="thresholdControl" type="range" min="0.05" max="0.24" step="0.005" value="0.08" />
+            <strong id="thresholdValue">0.080</strong>
+          </label>
+          <label>
+            <span>Crosses per jump</span>
+            <input id="crossesControl" type="number" min="1" max="6" step="1" value="2" />
+          </label>
+          <label>
+            <span>Smoothing</span>
+            <input id="smoothingControl" type="range" min="0.05" max="1" step="0.01" value="0.35" />
+            <strong id="smoothingValue">0.35</strong>
+          </label>
+        </div>
+
+        <div id="jumpFlash" class="jump-flash" aria-live="polite">JUMP TRIGGERED</div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/diagnostics.js"></script>
+  </body>
+</html>

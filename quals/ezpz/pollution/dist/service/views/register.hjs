@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Register | LaaS</title>
+    {{> head }}
+  </head>
+  <body>
+    {{> navbar }}
+    <main class="page narrow">
+      <h1>Register</h1>
+      {{#message}}
+        <p class="alert">{{.}}</p>
+      {{/message}}
+      <form action="/signup" method="post">
+        <label>Username</label>
+        <input type="text" name="username" required>
+        <label>Password</label>
+        <input type="password" name="password" required>
+        <label>Password (repeat)</label>
+        <input type="password" name="password2" required>
+        <button type="submit">Create account</button>
+      </form>
+    </main>
+    <script src="/javascript/main.js"></script>
+  </body>
+</html>

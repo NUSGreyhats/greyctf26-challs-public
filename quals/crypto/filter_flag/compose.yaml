@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  filter_flag:
+    build: service
+    container_name: filter_flag
+    ports:
+      - "37167:37167"
+    restart: unless-stopped

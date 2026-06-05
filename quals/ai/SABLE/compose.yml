@@ -1,0 +1,9 @@
+services:
+  sable:
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    container_name: sable
+    ports:
+      - "38267:38267"
+    restart: unless-stopped

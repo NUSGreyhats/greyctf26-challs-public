@@ -1,0 +1,32 @@
+{
+  "seed": 2026,
+  "environment": "MiniGrid-LockedRoom-v0",
+  "observation": "RGB partial view",
+  "image_shape": [
+    56,
+    56,
+    3
+  ],
+  "actions": {
+    "0": "left",
+    "1": "right",
+    "2": "forward",
+    "3": "pickup",
+    "4": "drop",
+    "5": "toggle",
+    "6": "done"
+  },
+  "policy": {
+    "checkpoint": "policy.pt",
+    "encoder": "tile_patch_mlp",
+    "tile_grid": [
+      7,
+      7
+    ],
+    "tile_size": 8,
+    "embedding_dim": 160,
+    "recurrent": "gru",
+    "hidden_dim": 192,
+    "action_count": 7
+  }
+}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>67 Flight</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="game-stage" aria-label="67 hand tracking flight game">
+        <canvas id="game" width="960" height="540"></canvas>
+
+        <div class="hud" aria-live="polite">
+          <div>
+            <span class="label">Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div>
+            <span class="label">Best</span>
+            <strong id="best">0</strong>
+          </div>
+          <div>
+            <span class="label">Mode</span>
+            <strong id="mode">Standby</strong>
+          </div>
+        </div>
+
+        <div id="flagBanner" class="flag-banner" hidden>
+          <span class="label">Flag</span>
+          <code id="flagText"></code>
+        </div>
+
+        <div id="cheatAlert" class="cheat-alert" hidden aria-live="assertive">
+          <span class="label">Integrity</span>
+          <strong id="cheatAlertText"></strong>
+        </div>
+
+      </section>
+
+      <aside class="telemetry" aria-label="tracking telemetry">
+        <div class="telemetry-top">
+          <div class="panel status-panel">
+            <div class="panel-title">Tracking</div>
+            <p id="status">Waiting for camera.</p>
+            <div class="meters">
+              <div>
+                <span>Left</span>
+                <meter id="leftMeter" min="0" max="1" value="0.5"></meter>
+              </div>
+              <div>
+                <span>Right</span>
+                <meter id="rightMeter" min="0" max="1" value="0.5"></meter>
+              </div>
+            </div>
+            <div class="gesture-readout">
+              <span id="gestureState">NEUTRAL</span>
+              <span id="flapPulse">0 flaps</span>
+            </div>
+          </div>
+
+          <div class="camera-frame">
+            <video id="cameraPreview" playsinline muted></video>
+            <canvas id="handOverlay" aria-hidden="true"></canvas>
+          </div>
+        </div>
+        <div class="controls" aria-label="game controls">
+          <button id="cameraButton" type="button">Camera</button>
+          <button id="restartButton" type="button">Restart</button>
+        </div>
+        <section class="credits-panel" aria-label="asset credits">
+          <div class="credits-title">Asset credits</div>
+          <p>
+            Assets based on Flappy Sprite Sheet 16x16 by Yorokobi Games / Rene Breitinger
+            <a class="credits-link" href="https://opengameart.org/content/flappy-sprite-sheet-16x16" target="_blank" rel="noreferrer">(Source)</a>
+          </p>
+        </section>
+      </aside>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+action,predicted_reward,predicted_continue,image_mse
+0 left,5.093,0.655,5103.0
+1 right,3.589,0.913,5043.8
+2 forward,4.398,0.763,5370.7
+3 pickup,0.050,0.980,4993.0
+4 drop,3.866,0.731,4754.8
+5 toggle,3.252,0.180,7687.9
+6 done,3.207,0.180,6730.0

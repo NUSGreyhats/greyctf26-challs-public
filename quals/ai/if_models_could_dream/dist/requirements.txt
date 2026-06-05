@@ -1,0 +1,5 @@
+torch
+pillow
+numpy
+gymnasium
+minigrid

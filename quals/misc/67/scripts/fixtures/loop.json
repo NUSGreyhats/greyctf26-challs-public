@@ -1,0 +1,1535 @@
+{
+  "version": 1,
+  "createdAt": "2026-05-26T15:32:23.410Z",
+  "target": "ws://127.0.0.1:8787/ws",
+  "startedAt": null,
+  "completedAt": "2026-05-26T15:32:23.411Z",
+  "result": "loop",
+  "score": 0,
+  "claimScore": 0,
+  "handSamples": 169,
+  "flaps": 0,
+  "events": [
+    {
+      "atMs": 0,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 16.666666666666668,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 33.333333333333336,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 50,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 66.66666666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 83.33333333333334,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 100.00000000000001,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 116.66666666666669,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 133.33333333333334,
+      "message": {
+        "type": "hands",
+        "leftY": 0.43521367521367477,
+        "rightY": 0.511623931623932,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 150,
+      "message": {
+        "type": "hands",
+        "leftY": 0.3882051282051282,
+        "rightY": 0.5543589743589743,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 166.66666666666666,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 183.33333333333331,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 199.99999999999997,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 216.66666666666663,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 233.3333333333333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 249.99999999999994,
+      "message": {
+        "type": "hands",
+        "leftY": 0.3936111111111111,
+        "rightY": 0.5494444444444444,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 266.66666666666663,
+      "message": {
+        "type": "hands",
+        "leftY": 0.4360493827160491,
+        "rightY": 0.5108641975308644,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 283.3333333333333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.46151234567901245,
+        "rightY": 0.4877160493827159,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 300,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 316.6666666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 333.33333333333337,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5047863247863252,
+        "rightY": 0.4420512820512816,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 350.00000000000006,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5517948717948717,
+        "rightY": 0.39076923076923076,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 366.66666666666674,
+      "message": {
+        "type": "hands",
+        "leftY": 0.58,
+        "rightY": 0.36,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 383.3333333333334,
+      "message": {
+        "type": "hands",
+        "leftY": 0.58,
+        "rightY": 0.36,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 400.0000000000001,
+      "message": {
+        "type": "hands",
+        "leftY": 0.58,
+        "rightY": 0.36,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 416.6666666666668,
+      "message": {
+        "type": "hands",
+        "leftY": 0.58,
+        "rightY": 0.36,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 433.3333333333335,
+      "message": {
+        "type": "hands",
+        "leftY": 0.58,
+        "rightY": 0.36,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 450.00000000000017,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5463888888888888,
+        "rightY": 0.3966666666666666,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 466.66666666666686,
+      "message": {
+        "type": "hands",
+        "leftY": 0.50395061728395,
+        "rightY": 0.4429629629629636,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 483.33333333333354,
+      "message": {
+        "type": "hands",
+        "leftY": 0.4784876543209875,
+        "rightY": 0.4707407407407409,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 500.0000000000002,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 516.6666666666669,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 533.3333333333335,
+      "message": {
+        "type": "hands",
+        "leftY": 0.43521367521367477,
+        "rightY": 0.511623931623932,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 550.0000000000001,
+      "message": {
+        "type": "hands",
+        "leftY": 0.3882051282051282,
+        "rightY": 0.5543589743589743,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 566.6666666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 583.3333333333334,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 600,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 616.6666666666666,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 633.3333333333333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.36,
+        "rightY": 0.58,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 649.9999999999999,
+      "message": {
+        "type": "hands",
+        "leftY": 0.38578124999999996,
+        "rightY": 0.5565625,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 666.6666666666665,
+      "message": {
+        "type": "hands",
+        "leftY": 0.4211111111111108,
+        "rightY": 0.5244444444444447,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 683.3333333333331,
+      "message": {
+        "type": "hands",
+        "leftY": 0.4468923611111107,
+        "rightY": 0.5010069444444447,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 699.9999999999998,
+      "message": {
+        "type": "hands",
+        "leftY": 0.463125,
+        "rightY": 0.48624999999999996,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 716.6666666666664,
+      "message": {
+        "type": "hands",
+        "leftY": 0.4698090277777777,
+        "rightY": 0.4801736111111111,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 733.333333333333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 749.9999999999997,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 766.6666666666663,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 783.3333333333329,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 799.9999999999995,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 816.6666666666662,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 833.3333333333328,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 849.9999999999994,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 866.6666666666661,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 883.3333333333327,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 899.9999999999993,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 916.666666666666,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 933.3333333333326,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 949.9999999999992,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 966.6666666666658,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 983.3333333333325,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 999.9999999999991,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1016.6666666666657,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1033.3333333333323,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1049.999999999999,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1066.6666666666658,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1083.3333333333326,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1099.9999999999993,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1116.666666666666,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1133.3333333333328,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1149.9999999999995,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1166.6666666666663,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1183.333333333333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1199.9999999999998,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1216.6666666666665,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1233.3333333333333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1250,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1266.6666666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1283.3333333333335,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1300.0000000000002,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1316.666666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1333.3333333333337,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1350.0000000000005,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1366.6666666666672,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1383.333333333334,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1400.0000000000007,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1416.6666666666674,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1433.3333333333342,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1450.000000000001,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1466.6666666666677,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1483.3333333333344,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1500.0000000000011,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1516.6666666666679,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1533.3333333333346,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1550.0000000000014,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1566.666666666668,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1583.3333333333348,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1600.0000000000016,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1616.6666666666683,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1633.333333333335,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1650.0000000000018,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1666.6666666666686,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1683.3333333333353,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1700.000000000002,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1716.6666666666688,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1733.3333333333355,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1750.0000000000023,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1766.666666666669,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1783.3333333333358,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1800.0000000000025,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1816.6666666666692,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1833.333333333336,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1850.0000000000027,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1866.6666666666695,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1883.3333333333362,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1900.000000000003,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1916.6666666666697,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1933.3333333333364,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1950.0000000000032,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1966.66666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1983.3333333333367,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2000.0000000000034,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2016.6666666666702,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2033.333333333337,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2050.0000000000036,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2066.66666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2083.3333333333367,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2100.000000000003,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2116.6666666666697,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2133.333333333336,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2150.0000000000027,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2166.6666666666692,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2183.3333333333358,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2200.0000000000023,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2216.666666666669,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2233.3333333333353,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2250.000000000002,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2266.6666666666683,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2283.333333333335,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2300.0000000000014,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2316.666666666668,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2333.3333333333344,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2350.000000000001,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2366.6666666666674,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2383.333333333334,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2400.0000000000005,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2416.666666666667,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2433.3333333333335,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2450,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2466.6666666666665,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2483.333333333333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2499.9999999999995,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2516.666666666666,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2533.3333333333326,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2549.999999999999,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2566.6666666666656,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2583.333333333332,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2599.9999999999986,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2616.666666666665,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2633.3333333333317,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2649.999999999998,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2666.6666666666647,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2683.333333333331,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2699.9999999999977,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2716.6666666666642,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2733.3333333333308,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2749.9999999999973,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2766.666666666664,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2783.3333333333303,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2799.999999999997,
+      "message": {
+        "type": "hands",
+        "leftY": 0.47,
+        "rightY": 0.48,
+        "handCount": 2
+      }
+    }
+  ]
+}

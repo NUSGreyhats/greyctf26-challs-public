@@ -1,0 +1,6 @@
+services:
+  gallery:
+    image: greyhats_gallery:latest
+    ports:
+      - "34267:3000"
+    restart: unless-stopped

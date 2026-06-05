@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SeeTeeEffedIn Network</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/">
+          <div class="brand-mark">in</div>
+          <div class="brand-copy">
+            <strong>SeeTeeEffedIn</strong>
+            <span
+              >Professional-style feed, lightweight identity, public
+              posts.</span
+            >
+          </div>
+        </a>
+        <div class="topbar-side">
+          <a class="secondary-button" href="/auth.html#signin" data-guest-only
+            >Sign in</a
+          >
+          <a class="primary-button" href="/auth.html#register" data-guest-only
+            >Register</a
+          >
+          <a class="secondary-button hidden" href="/profile.html" data-auth-only
+            >View profile</a
+          >
+          <button
+            class="ghost-button hidden"
+            data-auth-only
+            data-logout
+            type="button"
+          >
+            Sign out
+          </button>
+        </div>
+      </header>
+      <section class="layout-3">
+        <aside class="stack">
+          <section class="panel">
+            <div class="section-tag">Your profile</div>
+            <h2 id="sidebar-name">Welcome</h2>
+            <p class="body-copy" id="sidebar-copy">
+              Browse the public feed or join the network to share updates.
+            </p>
+            <div class="actions" style="margin-top: 16px">
+              <a class="secondary-button" href="/auth.html" data-guest-only
+                >Join now</a
+              >
+              <a
+                class="secondary-button hidden"
+                href="/profile.html"
+                data-auth-only
+                >View profile</a
+              >
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-tag">Posting</div>
+            <h3>What works here</h3>
+            <p class="body-copy">
+              Short public updates, clear names, and a denser feed-first
+              experience.
+            </p>
+          </section>
+        </aside>
+        <main class="stack">
+          <section class="feed-card">
+            <div class="section-tag">Start a post</div>
+            <h2>Share with your network</h2>
+            <p class="body-copy">
+              Write a short public update. Signed-in members can publish
+              immediately.
+            </p>
+            <form id="post-form">
+              <label>
+                New post
+                <textarea
+                  id="post-body"
+                  maxlength="280"
+                  placeholder="Share a professional update with the network."
+                  data-auth-only
+                ></textarea>
+              </label>
+              <div class="actions">
+                <button
+                  class="primary-button"
+                  id="post-submit"
+                  type="submit"
+                  data-auth-only
+                >
+                  Post
+                </button>
+                <button
+                  class="secondary-button"
+                  id="refresh-feed"
+                  type="button"
+                >
+                  Refresh
+                </button>
+                <a class="secondary-button" href="/auth.html" data-guest-only
+                  >Sign in to post</a
+                >
+              </div>
+            </form>
+            <div class="status" id="post-status"></div>
+          </section>
+          <section class="feed-card">
+            <div class="section-tag">Feed</div>
+            <h2>Network updates</h2>
+            <p class="body-copy">Recent public posts from across the app.</p>
+            <div class="feed-list" id="feed-list">
+              <div class="empty-state">Loading posts…</div>
+            </div>
+          </section>
+        </main>
+        <aside class="stack">
+          <section class="panel">
+            <div class="section-tag">Community</div>
+            <h3>Feed snapshot</h3>
+            <div class="metric-grid" style="margin-top: 14px">
+              <div class="metric-card">
+                <strong id="metric-posts">0</strong>
+                <span>Total posts</span>
+              </div>
+              <div class="metric-card">
+                <strong id="metric-authors">0</strong>
+                <span>Active authors</span>
+              </div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-tag">Identity</div>
+            <h3>Profile handles</h3>
+            <p class="body-copy">
+              People see your handle on SeeTeeEffedIn posts and use it to find
+              your updates across the feed.
+            </p>
+          </section>
+        </aside>
+      </section>
+    </div>
+    <script type="module">
+      import {
+        api,
+        loadPosts,
+        loadProfile,
+        renderPostsList,
+        renderViewer,
+        setStatus,
+        summarizePosts,
+        wireChrome,
+      } from "/app.js";
+      wireChrome();
+      const postForm = document.getElementById("post-form");
+      const postBodyInput = document.getElementById("post-body");
+      const postStatusEl = document.getElementById("post-status");
+      const feedListEl = document.getElementById("feed-list");
+      const metricPostsEl = document.getElementById("metric-posts");
+      const metricAuthorsEl = document.getElementById("metric-authors");
+      const sidebarNameEl = document.getElementById("sidebar-name");
+      const sidebarCopyEl = document.getElementById("sidebar-copy");
+      let currentProfile = null;
+      function renderFeedSummary(posts) {
+        const summary = summarizePosts(posts);
+        metricPostsEl.textContent = String(summary.totalPosts);
+        metricAuthorsEl.textContent = String(summary.uniqueAuthors);
+      }
+      async function refreshFeed() {
+        const posts = await loadPosts();
+        renderPostsList(posts, feedListEl);
+        renderFeedSummary(posts);
+      }
+      async function refreshProfile() {
+        currentProfile = await loadProfile().catch(() => null);
+        renderViewer(currentProfile);
+        if (currentProfile) {
+          sidebarNameEl.textContent = currentProfile.display_name;
+          sidebarCopyEl.textContent = `Signed in as @${currentProfile.username}. Your posts appear in the public feed immediately.`;
+          postBodyInput.disabled = false;
+        } else {
+          sidebarNameEl.textContent = "Welcome";
+          sidebarCopyEl.textContent =
+            "Browse the public feed or join the network to share updates.";
+          postBodyInput.disabled = true;
+        }
+      }
+      postForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setStatus(postStatusEl, "Posting update...");
+        try {
+          await api("/api/posts", {
+            method: "POST",
+            body: JSON.stringify({ body: postBodyInput.value }),
+          });
+          postBodyInput.value = "";
+          await refreshFeed();
+          setStatus(postStatusEl, "Post published.", "success");
+        } catch (error) {
+          setStatus(postStatusEl, error.message, "error");
+        }
+      });
+      document
+        .getElementById("refresh-feed")
+        .addEventListener("click", async () => {
+          setStatus(postStatusEl, "Refreshing feed...");
+          try {
+            await refreshFeed();
+            setStatus(postStatusEl, "Feed refreshed.", "success");
+          } catch (error) {
+            setStatus(postStatusEl, error.message, "error");
+          }
+        });
+      await refreshProfile();
+      await refreshFeed().catch((error) => {
+        feedListEl.innerHTML = `<div class="empty-state">${error.message}</div>`;
+      });
+    </script>
+  </body>
+</html>

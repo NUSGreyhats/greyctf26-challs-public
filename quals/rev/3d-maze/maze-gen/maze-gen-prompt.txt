@@ -1,0 +1,15 @@
+generate me a python script that generates a 3d maze.
+requirements:
+- wall is '#', path is ' ', boost is '.', end is 'F'
+- able to set the size (1 degree of freedom; the maze is a cube)
+- for a size N maze, it will require (2N+1)^3 characters because of the walls
+- assume size N is odd and at least 15. player will start at the very center; end 'F' will be on the same "layer" but at the bottom right corner of the layer
+- boosts will be randomly scattered on paths, sparsely (at most 5% of the valid cells), at least 50% from the center core taxicab distance (so there is a central cube where there will be no boosts).
+- use random.seed(67), if random is used
+
+additional task-specific requirements. ***overall idea:*** i want to embed a secret character encoder in the maze. so, starting from the center, i can trace out almost any letter (for example: 'g' will be asdwssa). now obviously that would not work in a standard maze as it will require the middle 5x5 of the maze to be completely cleared out. so the caveat is we only need to form the trace from a bird's eye view; we can interleave however many layer up/down moves as necessary within our "asdwssa" sequence.
+- first, perform a standard maze generation for each layer. any algorithm that generates a decent-looking maze will do
+- allow up/down on every cell of every layer. this means that every other character layer (the "transition" layer) will look like a swiss cheese / grate
+- next, punch holes just enough to satisfy this task-specific requirement. importantly: make sure that there aren't too many "corridors" on any layer. also **specifically* avoid having layers where almost the entire center is cleared out.
+
+save the script in maze.py. do not reference other files in the directory.

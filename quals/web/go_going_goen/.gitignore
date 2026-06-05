@@ -1,0 +1,50 @@
+*.py[cod]
+
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+.npm/
+
+# Environment
+.env
+.env.local
+.tool-versions
+
+# Logs
+*.log
+
+# Runtime data
+tmp/
+.cache/
+.uv-cache/
+
+# Docker
+*.pid
+
+# Test artifacts
+coverage/
+# stage 1 solver cache (deployment-specific subset listing)
+solve/.pinpoint_subset.cache.txt

@@ -1,0 +1,7 @@
+services:
+  challenge:
+    container_name: misc-wait-a-minute
+    build: ./service
+    ports:
+      - 36267:5000
+    privileged: true

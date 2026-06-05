@@ -1,0 +1,11 @@
+# Name
+Wait a minute
+
+# Description
+Isn't this just another pyjail?? Tsk tsk tsk... such low-effort work...
+
+# Author
+k-hian
+
+# Flag
+`grey{9eT_i7_h0w_Y0u_1iv3_1t_10_t0E5_iN_wH3n_We_5t4nDin_0n_Bu5Ine5S}`

@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:18.3
+    container_name: ctf-db
+    environment:
+      POSTGRES_DB: ctf
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: c38c5962deefa8484548c77cd240465b705e2818b4ff12bf284edc8c1b9942db
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ctf"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: ctf-backend
+    environment:
+      DB_DSN: dbname=ctf user=app_user password=fa4bc8e2f481cdf134b779eb1770bd317b52feb4b2fdd37ea41954fc0819977e host=db
+      FLASK_APP: app.py
+      FLASK_ENV: development
+      CHALLENGE_FLAG: grey{refint_c4Scad3_Upd4t3_sq1_lnject10n}
+      CTFD_RESOLVE_URL: ${CTFD_RESOLVE_URL:-https://ctfd.nusgreyhats.org/plugins/team-token/api/v1/resolve}
+      CTFD_TEAM_TOKEN_PLUGIN_SECRET: ${CTFD_TEAM_TOKEN_PLUGIN_SECRET:-9bba6571341a220df792ef35e9ec73f5a17b466d151ed685e6b46b4d06a9020a}
+      CTFD_CHALLENGE_ID: ${CTFD_CHALLENGE_ID:-23}
+      TEAM_TOKEN_GATE_ENABLED: 1
+    ports:
+      - "34567:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db-reset:
+    image: postgres:18.3
+    container_name: ctf-db-reset
+    environment:
+      PGHOST: db
+      PGDATABASE: ctf
+      PGUSER: postgres
+      PGPASSWORD: c38c5962deefa8484548c77cd240465b705e2818b4ff12bf284edc8c1b9942db
+      RESET_INTERVAL_SECONDS: 300
+    volumes:
+      - ./db/init.sql:/reset/init.sql:ro
+      - ./scripts/auto-reset.sh:/reset/auto-reset.sh:ro
+      - ./scripts/reset-db.sh:/reset/reset-db.sh:ro
+    command: ["/bin/sh", "/reset/auto-reset.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

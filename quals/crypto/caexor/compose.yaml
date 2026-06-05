@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  caexor:
+    build: service
+    container_name: caexor
+    ports:
+      - "37267:30002"
+    restart: unless-stopped

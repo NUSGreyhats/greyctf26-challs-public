@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Profile</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/">
+          <div class="brand-mark">in</div>
+          <div class="brand-copy">
+            <strong>SeeTeeEffedIn</strong>
+            <span>Profile settings and public identity.</span>
+          </div>
+        </a>
+        <div class="topbar-side">
+          <a class="secondary-button" href="/auth.html#signin" data-guest-only
+            >Sign in</a
+          >
+          <a class="primary-button" href="/auth.html#register" data-guest-only
+            >Register</a
+          >
+          <a class="secondary-button hidden" href="/profile.html" data-auth-only
+            >View profile</a
+          >
+          <button
+            class="ghost-button hidden"
+            data-auth-only
+            data-logout
+            type="button"
+          >
+            Sign out
+          </button>
+        </div>
+      </header>
+      <section class="layout-3">
+        <main class="stack" style="grid-column: span 2">
+          <article class="profile-card">
+            <div class="profile-cover"></div>
+            <div class="profile-content">
+              <div class="section-tag">Profile</div>
+              <div class="profile-row">
+                <div class="profile-head">
+                  <div class="avatar" id="avatar">PS</div>
+                  <div class="profile-identity">
+                    <h1 id="display-name">Sign in required</h1>
+                    <div class="handle" id="username-pill">@guest</div>
+                  </div>
+                </div>
+                <div class="section-tag" id="profile-state-chip">
+                  Guest view
+                </div>
+              </div>
+              <p class="profile-bio" id="bio">
+                This page is for reviewing your public identity and updating
+                your private-facing handle.
+              </p>
+              <p class="profile-note" id="profile-note">
+                Your public-facing handle appears in the feed. Your
+                private-facing handle is used for sign-in and session sync.
+              </p>
+            </div>
+            <div class="profile-stats">
+              <div class="stat">
+                <span class="stat-label">Public posts</span>
+                <div class="stat-value" id="post-count">0</div>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Public-facing handle</span>
+                <div class="stat-value mono" id="public-handle">none</div>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Private-facing handle</span>
+                <div class="stat-value mono" id="private-handle">none</div>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Profile mode</span>
+                <div class="stat-value" id="profile-mode">Guest</div>
+              </div>
+            </div>
+          </article>
+          <section class="panel">
+            <div class="section-tag">Edit handles</div>
+            <h2>Update your handles</h2>
+            <p class="body-copy">
+              Change the public handle shown in the feed or the private handle
+              used for future sign-ins and session sync.
+            </p>
+            <form id="rename-form">
+              <label
+                >Public-facing handle<input
+                  id="rename-public-username"
+                  maxlength="64"
+                  placeholder="new-public-handle"
+              /></label>
+              <label
+                >Private-facing handle<input
+                  id="rename-private-username"
+                  maxlength="160"
+                  placeholder="new-private-handle"
+              /></label>
+              <div class="actions">
+                <button class="primary-button" id="rename-submit" type="submit">
+                  Save handles
+                </button>
+                <a class="secondary-button" href="/auth.html" data-guest-only
+                  >Sign in first</a
+                >
+              </div>
+            </form>
+            <div class="status" id="profile-status"></div>
+          </section>
+          <section class="feed-card">
+            <div class="section-tag">Recent activity</div>
+            <h2>Your latest posts</h2>
+            <div class="feed-list" id="own-posts">
+              <div class="empty-state">Sign in to view your posts.</div>
+            </div>
+          </section>
+        </main>
+        <aside class="stack">
+          <section class="panel">
+            <div class="section-tag">Account</div>
+            <h3>How handles work</h3>
+            <p class="body-copy">
+              Your public-facing handle appears next to posts. Your
+              private-facing handle is only shown to you and is required when
+              you sign in.
+            </p>
+          </section>
+        </aside>
+      </section>
+    </div>
+    <script type="module">
+      import {
+        initialsFor,
+        loadPosts,
+        loadProfile,
+        renderPostsList,
+        renderViewer,
+        setStatus,
+        api,
+        wireChrome,
+      } from "/app.js";
+      wireChrome();
+      const profile = await loadProfile().catch(() => null);
+      renderViewer(profile);
+      const ownPostsEl = document.getElementById("own-posts");
+      const renamePublicInput = document.getElementById(
+        "rename-public-username",
+      );
+      const renamePrivateInput = document.getElementById(
+        "rename-private-username",
+      );
+      const renameSubmit = document.getElementById("rename-submit");
+      const profileStatusEl = document.getElementById("profile-status");
+      if (profile) {
+        document.getElementById("avatar").textContent = initialsFor(
+          profile.display_name || profile.username,
+        );
+        document.getElementById("display-name").textContent =
+          profile.display_name;
+        document.getElementById("username-pill").textContent =
+          `@${profile.username}`;
+        document.getElementById("bio").textContent =
+          profile.bio || "No bio set.";
+        document.getElementById("public-handle").textContent = profile.username;
+        document.getElementById("private-handle").textContent =
+          profile.private_username;
+        document.getElementById("profile-mode").textContent = "Member";
+        document.getElementById("profile-state-chip").textContent =
+          "Editing profile";
+        document.getElementById("profile-note").textContent =
+          profile.session_note;
+        renamePublicInput.value = profile.username;
+        renamePrivateInput.value = profile.private_username;
+      } else {
+        renamePublicInput.disabled = true;
+        renamePrivateInput.disabled = true;
+        renameSubmit.disabled = true;
+      }
+      const posts = await loadPosts().catch(() => []);
+      if (profile) {
+        const ownPosts = posts.filter(
+          (post) => post.username === profile.username,
+        );
+        document.getElementById("post-count").textContent = String(
+          ownPosts.length,
+        );
+        renderPostsList(ownPosts, ownPostsEl);
+      }
+      document
+        .getElementById("rename-form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          setStatus(profileStatusEl, "Saving handles...");
+          try {
+            const updated = await api("/api/profile/handles", {
+              method: "POST",
+              body: JSON.stringify({
+                public_username: renamePublicInput.value,
+                private_username: renamePrivateInput.value,
+              }),
+            });
+            document.getElementById("username-pill").textContent =
+              `@${updated.username}`;
+            document.getElementById("public-handle").textContent =
+              updated.username;
+            document.getElementById("private-handle").textContent =
+              updated.private_username;
+            renamePublicInput.value = updated.username;
+            renamePrivateInput.value = updated.private_username;
+            setStatus(profileStatusEl, "Handles updated.", "success");
+          } catch (error) {
+            setStatus(profileStatusEl, error.message, "error");
+          }
+        });
+    </script>
+  </body>
+</html>

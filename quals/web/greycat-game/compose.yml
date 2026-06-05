@@ -1,0 +1,10 @@
+services:
+  greycat-game:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "34467:4173"
+    environment:
+      PORT: "4173"
+    restart: unless-stopped

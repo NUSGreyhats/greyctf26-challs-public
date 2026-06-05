@@ -1,0 +1,13 @@
+.git
+.pytest_cache
+**/__pycache__/
+**/*.pyc
+backend/.vault_token
+backend/server.log
+backend/server.err.log
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/server.log
+frontend/server.err.log
+screenshots/

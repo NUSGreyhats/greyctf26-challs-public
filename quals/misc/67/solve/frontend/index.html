@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>67 Solve Lab</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="game-stage" aria-label="67 solve lab game state">
+        <canvas id="game" width="960" height="540"></canvas>
+
+        <div class="hud" aria-live="polite">
+          <div>
+            <span class="label">Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div>
+            <span class="label">Best</span>
+            <strong id="best">0</strong>
+          </div>
+          <div>
+            <span class="label">Mode</span>
+            <strong id="mode">Standby</strong>
+          </div>
+        </div>
+
+        <div id="flagBanner" class="flag-banner" hidden>
+          <span class="label">Flag</span>
+          <code id="flagText"></code>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <section class="panel">
+          <div class="panel-title">Proxy target</div>
+          <label class="field">
+            <span>Backend</span>
+            <input id="targetInput" type="text" spellcheck="false" />
+          </label>
+          <div class="button-row">
+            <button id="connectButton" type="button">Reconnect</button>
+            <button id="restartButton" type="button">Restart</button>
+          </div>
+          <p id="status" class="status-text">Connecting.</p>
+          <div class="status-grid">
+            <div>
+              <span class="mini-label">Game socket</span>
+              <strong id="socketState">offline</strong>
+            </div>
+            <div>
+              <span class="mini-label">Last script</span>
+              <strong id="scriptState">none</strong>
+            </div>
+            <div>
+              <span class="mini-label">Trace</span>
+              <strong id="traceState">none</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel solver-panel">
+          <div class="panel-title">Video solver</div>
+          <div class="solver-media-grid">
+            <div>
+              <span class="mini-label">Source crop</span>
+              <div class="camera-frame">
+                <video id="cameraPreview" playsinline muted></video>
+                <canvas id="handOverlay" aria-hidden="true"></canvas>
+              </div>
+            </div>
+            <div>
+              <span class="mini-label">Submitted preview</span>
+              <div class="solver-preview-frame">
+                <canvas id="solverPreview" width="360" height="203"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="importVideoButton" type="button">Import video</button>
+            <button id="autoCropVideoButton" type="button">Auto crop</button>
+            <button id="extractVideoClipButton" type="button">
+              Extract clip
+            </button>
+            <button id="buildVideoSolverButton" type="button">
+              Build preview
+            </button>
+            <button id="runVideoSolverButton" type="button">
+              Submit preview
+            </button>
+            <input id="videoSolverInput" type="file" accept="video/*" hidden />
+          </div>
+          <div class="crop-grid">
+            <label class="field">
+              <span>Start s</span>
+              <input
+                id="cropStartInput"
+                type="number"
+                min="0"
+                step="0.05"
+                value="0"
+              />
+            </label>
+            <label class="field">
+              <span>End s</span>
+              <input
+                id="cropEndInput"
+                type="number"
+                min="0"
+                step="0.05"
+                value="0"
+              />
+            </label>
+          </div>
+          <div class="button-row compact-row">
+            <button id="markCropStartButton" type="button">
+              Use current as start
+            </button>
+            <button id="markCropEndButton" type="button">
+              Use current as end
+            </button>
+          </div>
+          <div class="section-speed-grid">
+            <label class="field">
+              <span>Lead speed</span>
+              <input
+                id="leadSpeedInput"
+                type="number"
+                min="0.2"
+                max="3"
+                step="0.02"
+                value="1"
+              />
+            </label>
+            <label class="field">
+              <span>Gesture speed</span>
+              <input
+                id="gestureSpeedInput"
+                type="number"
+                min="0.2"
+                max="3"
+                step="0.02"
+                value="1"
+              />
+            </label>
+            <label class="field">
+              <span>Recovery speed</span>
+              <input
+                id="recoverySpeedInput"
+                type="number"
+                min="0.2"
+                max="3"
+                step="0.02"
+                value="1"
+              />
+            </label>
+            <label class="field">
+              <span>Settle speed</span>
+              <input
+                id="settleSpeedInput"
+                type="number"
+                min="0.2"
+                max="3"
+                step="0.02"
+                value="1"
+              />
+            </label>
+          </div>
+          <div class="gesture-readout solver-readout">
+            <span id="gestureState">NEUTRAL</span>
+            <span id="flapPulse">0 samples</span>
+          </div>
+          <p id="videoSolverState" class="trace-text">
+            No source video loaded.
+          </p>
+          <div class="trace-metrics">
+            <span id="traceSummary">No trace loaded.</span>
+          </div>
+          <pre id="solveSuiteResult" class="suite-result">
+Solver output will appear here.</pre
+          >
+        </section>
+
+        <div class="hidden-hooks" hidden>
+          <button id="cameraButton" type="button">Camera</button>
+          <button id="stopScriptButton" type="button">Stop Script</button>
+          <select id="solveSuiteSelect"></select>
+          <p id="solveSuiteDescription"></p>
+          <button id="runSolveSuiteButton" type="button">Run selected</button>
+          <button id="exportTraceButton" type="button">Export trace</button>
+          <button id="importTraceButton" type="button">Import trace</button>
+          <input
+            id="importTraceInput"
+            type="file"
+            accept="application/json,.json"
+          />
+          <meter id="leftMeter" min="0" max="1" value="0.5"></meter>
+          <meter id="rightMeter" min="0" max="1" value="0.5"></meter>
+        </div>
+      </aside>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

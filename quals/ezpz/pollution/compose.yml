@@ -1,0 +1,18 @@
+services:
+  web:
+    build: ./service
+    image: pollution:latest
+    container_name: pollution
+    ports:
+      - "31467:3000"
+    environment:
+      SESSION_SECRET: some_sucure_session_secret_probably_to_use_for_idk_should_be_ok_rite?
+      PASSWORD_MAC_KEY: some_sucure_mac_key_probably_to_use_for_password_should_be_ok_rite?
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: admin_secret_password
+      FLAG: local-test-uuid-1234
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  uploads:

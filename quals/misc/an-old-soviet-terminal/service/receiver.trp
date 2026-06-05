@@ -1,0 +1,94 @@
+import timeout
+import string
+import declassifyutil
+
+(* UTILITY *)
+let
+    fun stringLength s =
+        let
+            fun loop i =
+                if substring(s, i, i+1) = "" then
+                    i
+                else
+                    loop (i + 1)
+        in
+            loop 0
+        end
+in
+
+(* SERVICES *)
+let
+    fun initSecureServices transmission = 
+        let
+            fun logServiceHandler () =
+                receive [
+                    hn ("log", sender, content) =>
+                        let
+                            val sanitized = declassify (content, authority, `{}`)
+                        in
+                            send (sender, ("logged", sanitized));
+                            logServiceHandler ()
+                        end,
+                    hn ("status", sender) =>
+                        send (sender, ("status", "OPERATIONAL"));
+                        logServiceHandler (),
+                    hn _ => logServiceHandler ()
+                ]
+
+            fun analysisServiceHandler () = 
+                receive [
+                    hn ("analyze", sender) =>
+                        let 
+                            val len = declassify_with_block (stringLength transmission, authority, `{}`)
+                        in
+                            send (sender, ("analysis", len));
+                            analysisServiceHandler ()
+                        end,
+                    hn ("compare", sender, idx, ch) =>
+                        let 
+                            val result = ((charAt transmission idx) = ch)
+                        in
+                            send (sender, ("comparison", result));
+                            analysisServiceHandler ()
+                        end,
+                    hn _ => analysisServiceHandler ()
+                ]
+        in
+            (logServiceHandler, analysisServiceHandler)
+        end
+in
+
+(* MAIN *)
+let
+    fun main () =       
+        let val thisNode = node (self ())
+            val _ = printString ("Running node with identifier: " ^ thisNode)
+            val _ = register ("receiver", self(), authority)
+
+            val (logServiceHandler, analysisServiceHandler) = initSecureServices (receive [
+                hn transmission => transmission
+            ])
+            val logService = spawn (fn () => logServiceHandler ())
+            val analysisService = spawn (fn () => analysisServiceHandler ())
+            fun reader () = 
+                let 
+                    val _ = ()
+                in
+                    receive [
+                        hn ("start", tid) => 
+                            send( tid, (logService, analysisService) ),
+                        hn (tid, f) => 
+                            send (tid, f() )
+                    ];
+                    reader ()
+                end
+        in  
+            register ("receiver", spawn (fn () => reader ()), authority) 
+        end
+in exitAfterTimeout authority 2500 0 "";
+    main ()
+end (* MAIN *)
+
+end (* SERVICES *)
+
+end (* UTILITY *)

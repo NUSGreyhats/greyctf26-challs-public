@@ -1,0 +1,15 @@
+services:
+  pollution:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pollution:latest
+    ports:
+      - "31467:3000"
+    environment:
+      SESSION_SECRET: ${SESSION_SECRET:-session-secret}
+      PASSWORD_MAC_KEY: ${PASSWORD_MAC_KEY:-mac_key}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password}
+      FLAG: ${FLAG:-local-test-uuid-1234}
+    restart: unless-stopped

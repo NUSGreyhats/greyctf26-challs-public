@@ -1,0 +1,4 @@
+.pnpm-store
+__pycache__
+*.pyc
+scripts/fixtures/solve-pack.json

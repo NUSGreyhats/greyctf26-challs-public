@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM Pro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f1f5f9; color: #1e293b; }
+    header { background: #1e293b; color: #fff; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    #user-info { font-size: 0.85rem; opacity: .7; }
+    nav { background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; gap: 4px; padding: 8px 24px; }
+    nav button { background: none; border: none; cursor: pointer; padding: 6px 14px; border-radius: 6px; font-size: .9rem; color: #475569; }
+    nav button:hover, nav button.active { background: #e0e7ff; color: #4338ca; }
+    main { max-width: 1100px; margin: 28px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: 20px; margin-bottom: 20px; }
+    .card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 14px; color: #334155; }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #f1f5f9; }
+    th { color: #64748b; font-weight: 600; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: .75rem; font-weight: 600; }
+    .badge-open { background: #dbeafe; color: #1d4ed8; }
+    .badge-won  { background: #dcfce7; color: #15803d; }
+    .badge-lost { background: #fee2e2; color: #b91c1c; }
+    .form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    input, select, textarea { border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px 10px; font-size: .88rem; flex: 1; min-width: 180px; }
+    textarea { resize: vertical; min-height: 80px; }
+    button.primary { background: #4338ca; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; font-size: .88rem; }
+    button.primary:hover { background: #3730a3; }
+    button.danger  { background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: .8rem; border-radius: 4px; }
+    #login-screen { max-width: 400px; margin: 80px auto; }
+    #login-screen h2 { text-align: center; margin-bottom: 20px; font-size: 1.4rem; }
+    #app-shell { display: none; }
+    .note-content { /* intentionally unsanitised for rich formatting */ }
+    .section { display: none; }
+    .section.active { display: block; }
+    #msg { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: 8px;
+           background: #1e293b; color: #fff; font-size: .88rem; display: none; z-index: 999; }
+  </style>
+</head>
+<body>
+
+<!-- ── Login ─────────────────────────────────── -->
+<div id="login-screen" class="card">
+  <h2>CRM Pro — Sign In</h2>
+  <div class="form-row"><input id="l-email" type="email" placeholder="Email" /></div>
+  <div class="form-row"><input id="l-pass"  type="password" placeholder="Password" /></div>
+  <div class="form-row"><button class="primary" onclick="doLogin()">Sign In</button></div>
+  <p style="margin-top:10px;font-size:.82rem;color:#64748b;text-align:center">
+    No account? <a href="#" onclick="showRegister()">Register</a>
+  </p>
+</div>
+
+<!-- ── Register modal ─────────────────────────── -->
+<div id="register-screen" class="card" style="max-width:400px;margin:80px auto;display:none;">
+  <h2>Create Account</h2>
+  <div class="form-row"><input id="r-user" placeholder="Username" /></div>
+  <div class="form-row"><input id="r-email" type="email" placeholder="Email" /></div>
+  <div class="form-row"><input id="r-pass"  type="password" placeholder="Password" /></div>
+  <div class="form-row">
+    <button class="primary" onclick="doRegister()">Register</button>
+    <button onclick="showLogin()" style="border:none;background:none;cursor:pointer;color:#4338ca;">Back</button>
+  </div>
+</div>
+
+<!-- ── App shell ──────────────────────────────── -->
+<div id="app-shell">
+  <header>
+    <h1>CRM Pro</h1>
+    <span id="user-info"></span>
+  </header>
+  <nav>
+    <button onclick="show('dashboard')" class="active" id="nav-dashboard">Dashboard</button>
+    <button onclick="show('customers')" id="nav-customers">Customers</button>
+    <button onclick="show('deals')"     id="nav-deals">Deals</button>
+    <button onclick="show('notes')"     id="nav-notes">Notes</button>
+    <button onclick="show('files')"     id="nav-files">Files</button>
+    <button onclick="show('email-templates')" id="nav-email-templates">Email Templates</button>
+    <button onclick="show('webhooks')"  id="nav-webhooks">Webhooks</button>
+    <button onclick="doLogout()"        style="margin-left:auto;">Logout</button>
+  </nav>
+  <main>
+
+    <!-- Dashboard -->
+    <div class="section active" id="sec-dashboard">
+      <div class="card">
+        <h2>Summary</h2>
+        <div id="dash-summary" style="font-size:.9rem;color:#475569;line-height:2;">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Customers -->
+    <div class="section" id="sec-customers">
+      <div class="card">
+        <h2>New Customer</h2>
+        <div class="form-row">
+          <input id="c-first"   placeholder="First name" />
+          <input id="c-last"    placeholder="Last name" />
+          <input id="c-email"   placeholder="Email" />
+          <input id="c-company" placeholder="Company" />
+        </div>
+        <div class="form-row">
+          <input id="c-search"  placeholder="Search…" oninput="loadCustomers()" />
+          <button class="primary" onclick="createCustomer()">Add Customer</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Customers</h2>
+        <table id="customers-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Status</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Deals -->
+    <div class="section" id="sec-deals">
+      <div class="card">
+        <h2>New Deal</h2>
+        <div class="form-row">
+          <input id="d-title"  placeholder="Title" />
+          <input id="d-value"  type="number" placeholder="Value ($)" />
+          <select id="d-stage">
+            <option>prospect</option><option>qualified</option>
+            <option>proposal</option><option>negotiation</option>
+            <option>closed_won</option><option>closed_lost</option>
+          </select>
+          <button class="primary" onclick="createDeal()">Add Deal</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>All Deals</h2>
+        <table id="deals-table">
+          <thead><tr><th>Title</th><th>Value</th><th>Stage</th><th>Probability</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="section" id="sec-notes">
+      <div class="card">
+        <h2>Add Note</h2>
+        <div class="form-row">
+          <input id="n-cid"     placeholder="Customer ID" />
+        </div>
+        <div class="form-row">
+          <textarea id="n-content" placeholder="Note content (HTML supported)…"></textarea>
+        </div>
+        <button class="primary" onclick="createNote()">Save Note</button>
+      </div>
+      <div class="card">
+        <h2>Recent Notes</h2>
+        <div id="notes-list"></div>
+      </div>
+    </div>
+
+    <!-- Files -->
+    <div class="section" id="sec-files">
+      <div class="card">
+        <h2>Upload File</h2>
+        <div class="form-row">
+          <input id="f-cid" placeholder="Customer ID" />
+          <input type="file" id="f-file" />
+          <button class="primary" onclick="uploadFile()">Upload</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Download File by Name</h2>
+        <div class="form-row">
+          <input id="f-name" placeholder="filename (e.g. report.pdf)" />
+          <button class="primary" onclick="downloadFile()">Download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Email Templates -->
+    <div class="section" id="sec-email-templates">
+      <div class="card">
+        <h2>New Template</h2>
+        <div class="form-row">
+          <input  id="et-name"    placeholder="Template name" />
+          <input  id="et-subject" placeholder="Subject (Go template syntax)" />
+        </div>
+        <div class="form-row">
+          <textarea id="et-body" placeholder="Body (Go text/template syntax)…" style="min-height:120px;"></textarea>
+        </div>
+        <button class="primary" onclick="createEmailTemplate()">Save Template</button>
+      </div>
+      <div class="card">
+        <h2>Templates</h2>
+        <table id="et-table">
+          <thead><tr><th>Name</th><th>Subject</th><th>Preview</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="card" id="et-preview-card" style="display:none;">
+        <h2>Preview Output</h2>
+        <p style="font-size:.85rem;color:#64748b;margin-bottom:10px;" id="et-preview-subject"></p>
+        <div id="et-preview-body" style="background:#f8fafc;padding:14px;border-radius:6px;font-size:.88rem;"></div>
+      </div>
+    </div>
+
+    <!-- Webhooks -->
+    <div class="section" id="sec-webhooks">
+      <div class="card">
+        <h2>New Webhook</h2>
+        <div class="form-row">
+          <input id="wh-name"  placeholder="Name" />
+          <input id="wh-url"   placeholder="URL" />
+          <select id="wh-event">
+            <option>customer.created</option><option>deal.created</option>
+            <option>deal.updated</option><option>deal.won</option>
+          </select>
+          <button class="primary" onclick="createWebhook()">Add</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Webhooks</h2>
+        <table id="webhooks-table">
+          <thead><tr><th>Name</th><th>URL</th><th>Event</th><th>Test</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="msg"></div>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const API = '/api';
+let token = localStorage.getItem('crm_token') || '';
+
+function hdrs() {
+  return {'Content-Type':'application/json', 'Authorization':'Bearer ' + token};
+}
+
+async function api(method, path, body) {
+  const opts = {method, headers: hdrs()};
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  if (r.status === 401) { doLogout(); return null; }
+  return r.json();
+}
+
+function toast(msg, color='#1e293b') {
+  const el = document.getElementById('msg');
+  el.textContent = msg;
+  el.style.background = color;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display='none', 3000);
+}
+
+function show(section) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + section).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + section)?.classList.add('active');
+  if (section === 'customers')        loadCustomers();
+  if (section === 'deals')            loadDeals();
+  if (section === 'notes')            loadNotes();
+  if (section === 'email-templates')  loadEmailTemplates();
+  if (section === 'webhooks')         loadWebhooks();
+  if (section === 'dashboard')        loadDashboard();
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+function showLogin()    { document.getElementById('login-screen').style.display='block'; document.getElementById('register-screen').style.display='none'; }
+function showRegister() { document.getElementById('login-screen').style.display='none'; document.getElementById('register-screen').style.display='block'; }
+
+async function doLogin() {
+  const email = document.getElementById('l-email').value;
+  const password = document.getElementById('l-pass').value;
+  const res = await fetch(API + '/auth/login', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({email, password})
+  });
+  const data = await res.json();
+  if (data.token) {
+    token = data.token;
+    localStorage.setItem('crm_token', token);
+    bootApp(data.user);
+  } else {
+    toast(data.error || 'Login failed', '#ef4444');
+  }
+}
+
+async function doRegister() {
+  const res = await fetch(API + '/auth/register', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      username: document.getElementById('r-user').value,
+      email:    document.getElementById('r-email').value,
+      password: document.getElementById('r-pass').value,
+    })
+  });
+  const data = await res.json();
+  if (res.ok) { showLogin(); toast('Account created — please log in'); }
+  else toast(data.error || 'Registration failed', '#ef4444');
+}
+
+function bootApp(user) {
+  document.getElementById('login-screen').style.display    = 'none';
+  document.getElementById('register-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display       = 'block';
+  document.getElementById('user-info').textContent = user ? (user.email || '') : '';
+  loadDashboard();
+}
+
+function doLogout() {
+  token = '';
+  localStorage.removeItem('crm_token');
+  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'block';
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const d = await api('GET', '/reports/summary');
+  if (!d) return;
+  const el = document.getElementById('dash-summary');
+  el.innerHTML = `
+    Customers: <strong>${d.total_customers ?? 0}</strong> &nbsp;|&nbsp;
+    Open Deals: <strong>${d.active_deals ?? 0}</strong> &nbsp;|&nbsp;
+    Won Value: <strong>$${(d.total_deal_value_won ?? 0).toLocaleString()}</strong> &nbsp;|&nbsp;
+    Completed Activities: <strong>${d.completed_activities ?? 0}</strong>
+  `;
+}
+
+// ── Customers ─────────────────────────────────────────────────────────────────
+async function loadCustomers() {
+  const search = document.getElementById('c-search')?.value || '';
+  const d = await api('GET', `/customers?search=${encodeURIComponent(search)}&limit=50`);
+  if (!d) return;
+  const tbody = document.querySelector('#customers-table tbody');
+  tbody.innerHTML = (d.data || []).map(c => `
+    <tr>
+      <td>${c.first_name} ${c.last_name}</td>
+      <td>${c.email || ''}</td>
+      <td>${c.company || ''}</td>
+      <td><span class="badge badge-open">${c.status || 'active'}</span></td>
+      <td><button class="danger" onclick="deleteCustomer(${c.id})">Del</button></td>
+    </tr>
+  `).join('');
+}
+
+async function createCustomer() {
+  await api('POST', '/customers', {
+    first_name: document.getElementById('c-first').value,
+    last_name:  document.getElementById('c-last').value,
+    email:      document.getElementById('c-email').value,
+    company:    document.getElementById('c-company').value,
+  });
+  toast('Customer added');
+  loadCustomers();
+}
+
+async function deleteCustomer(id) {
+  await api('DELETE', '/customers/' + id);
+  loadCustomers();
+}
+
+// ── Deals ──────────────────────────────────────────────────────────────────────
+async function loadDeals() {
+  const d = await api('GET', '/deals?limit=50');
+  if (!d) return;
+  const tbody = document.querySelector('#deals-table tbody');
+  tbody.innerHTML = (d.data || []).map(dl => `
+    <tr>
+      <td>${dl.title}</td>
+      <td>$${(dl.value ?? 0).toLocaleString()}</td>
+      <td>${dl.stage}</td>
+      <td>${dl.probability ?? 0}%</td>
+    </tr>
+  `).join('');
+}
+
+async function createDeal() {
+  await api('POST', '/deals', {
+    title:  document.getElementById('d-title').value,
+    value:  parseFloat(document.getElementById('d-value').value) || 0,
+    stage:  document.getElementById('d-stage').value,
+  });
+  toast('Deal added');
+  loadDeals();
+}
+
+// ── Notes ──────────────────────────────────────────────────────────────────────
+async function loadNotes() {
+  // Load notes for whatever customer ID is in the box, or show placeholder
+  const cid = document.getElementById('n-cid').value;
+  if (!cid) { document.getElementById('notes-list').innerHTML = '<p style="color:#94a3b8;font-size:.85rem;">Enter a customer ID to view notes.</p>'; return; }
+  const d = await api('GET', `/customers/${cid}/notes`);
+  if (!d) return;
+  const list = document.getElementById('notes-list');
+  if (!(d.data || d).length) { list.innerHTML = '<p style="color:#94a3b8;">No notes yet.</p>'; return; }
+  // Note: rendering is done via innerHTML to support rich formatting authored by the CRM user.
+  list.innerHTML = (d.data || d).map(n => `
+    <div style="border-bottom:1px solid #f1f5f9;padding:12px 0;">
+      <div style="font-size:.75rem;color:#94a3b8;margin-bottom:4px;">${new Date(n.created_at).toLocaleString()}</div>
+      <div class="note-content">${n.content}</div>
+    </div>
+  `).join('');
+}
+
+async function createNote() {
+  const cid     = document.getElementById('n-cid').value;
+  const content = document.getElementById('n-content').value;
+  if (!cid || !content) { toast('Customer ID and content required', '#ef4444'); return; }
+  await api('POST', `/customers/${cid}/notes`, {content, note_type: 'general'});
+  document.getElementById('n-content').value = '';
+  toast('Note saved');
+  loadNotes();
+}
+
+// ── Files ──────────────────────────────────────────────────────────────────────
+async function uploadFile() {
+  const cid  = document.getElementById('f-cid').value;
+  const file = document.getElementById('f-file').files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('customer_id', cid);
+  const r = await fetch(API + '/files/upload', {
+    method: 'POST',
+    headers: {'Authorization': 'Bearer ' + token},
+    body: fd
+  });
+  const d = await r.json();
+  toast(r.ok ? 'File uploaded: ' + d.filename : (d.error || 'Upload failed'), r.ok ? '#15803d' : '#ef4444');
+}
+
+async function downloadFile() {
+  const name = document.getElementById('f-name').value;
+  if (!name) return;
+  window.open(API + '/files/download?filename=' + encodeURIComponent(name), '_blank');
+}
+
+// ── Email Templates ──────────────────────────────────────────────────────────
+async function loadEmailTemplates() {
+  const d = await api('GET', '/email-templates');
+  if (!d) return;
+  const tbody = document.querySelector('#et-table tbody');
+  tbody.innerHTML = (d.data || []).map(t => `
+    <tr>
+      <td>${t.name}</td>
+      <td>${t.subject}</td>
+      <td><button class="primary" style="padding:3px 10px;font-size:.78rem;" onclick="previewTemplate(${t.id})">Preview</button></td>
+    </tr>
+  `).join('');
+}
+
+async function createEmailTemplate() {
+  await api('POST', '/email-templates', {
+    name:    document.getElementById('et-name').value,
+    subject: document.getElementById('et-subject').value,
+    body:    document.getElementById('et-body').value,
+  });
+  toast('Template saved');
+  loadEmailTemplates();
+}
+
+async function previewTemplate(id) {
+  const d = await api('POST', `/email-templates/${id}/preview`);
+  if (!d) return;
+  document.getElementById('et-preview-card').style.display = '';
+  document.getElementById('et-preview-subject').textContent = 'Subject: ' + d.subject;
+  // Body rendered with innerHTML so HTML in template output is visible in preview
+  document.getElementById('et-preview-body').innerHTML = d.body;
+  toast('Preview rendered');
+}
+
+// ── Webhooks ──────────────────────────────────────────────────────────────────
+async function loadWebhooks() {
+  const d = await api('GET', '/webhooks');
+  if (!d) return;
+  const tbody = document.querySelector('#webhooks-table tbody');
+  tbody.innerHTML = (d.data || []).map(w => `
+    <tr>
+      <td>${w.name}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${w.url}</td>
+      <td>${w.event_type}</td>
+      <td><button class="primary" style="padding:3px 10px;font-size:.78rem;" onclick="testWebhook(${w.id})">Test</button></td>
+    </tr>
+  `).join('');
+}
+
+async function createWebhook() {
+  await api('POST', '/webhooks', {
+    name:       document.getElementById('wh-name').value,
+    url:        document.getElementById('wh-url').value,
+    event_type: document.getElementById('wh-event').value,
+  });
+  toast('Webhook created');
+  loadWebhooks();
+}
+
+async function testWebhook(id) {
+  const d = await api('POST', '/webhooks/' + id + '/test');
+  toast(d?.message || 'Request sent');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+if (token) {
+  api('GET', '/auth/me').then(me => {
+    if (me && me.id) bootApp(me);
+    else { localStorage.removeItem('crm_token'); token = ''; }
+  });
+}
+</script>
+</body>
+</html>

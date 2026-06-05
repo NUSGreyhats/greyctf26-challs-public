@@ -1,0 +1,127 @@
+{
+  "edges": [
+    [
+      "user_target",
+      "user_giveaway_ring_01"
+    ],
+    [
+      "user_target",
+      "user_giveaway_ring_02"
+    ],
+    [
+      "user_target",
+      "user_linkfarm_17"
+    ],
+    [
+      "user_target",
+      "user_creator_21"
+    ],
+    [
+      "user_target",
+      "user_mod_09"
+    ],
+    [
+      "user_target",
+      "user_lurker_44"
+    ],
+    [
+      "user_creator_21",
+      "user_mod_09"
+    ]
+  ],
+  "name": "SABLE-spam-ego-graph",
+  "nodes": {
+    "user_creator_21": {
+      "features": {
+        "external_link_rate": 0.02,
+        "interaction_strength": 0.26,
+        "post_rate_norm": 0.34,
+        "profile_age_norm": 0.83,
+        "profile_realness": 0.92,
+        "report_rate": 0.05,
+        "shared_audience_overlap": 0.12,
+        "trust_score": 0.86
+      },
+      "role": "ordinary_neighbor"
+    },
+    "user_giveaway_ring_01": {
+      "features": {
+        "external_link_rate": 0.86,
+        "interaction_strength": 1.0,
+        "post_rate_norm": 0.92,
+        "profile_age_norm": 0.08,
+        "profile_realness": 0.02,
+        "report_rate": 0.94,
+        "shared_audience_overlap": 1.0,
+        "trust_score": 0.04
+      },
+      "role": "giveaway_spam_neighbor"
+    },
+    "user_giveaway_ring_02": {
+      "features": {
+        "external_link_rate": 0.8,
+        "interaction_strength": 0.93,
+        "post_rate_norm": 0.84,
+        "profile_age_norm": 0.14,
+        "profile_realness": 0.06,
+        "report_rate": 0.88,
+        "shared_audience_overlap": 0.96,
+        "trust_score": 0.1
+      },
+      "role": "giveaway_spam_neighbor"
+    },
+    "user_linkfarm_17": {
+      "features": {
+        "external_link_rate": 0.64,
+        "interaction_strength": 0.9,
+        "post_rate_norm": 0.76,
+        "profile_age_norm": 0.19,
+        "profile_realness": 0.12,
+        "report_rate": 0.74,
+        "shared_audience_overlap": 0.85,
+        "trust_score": 0.14
+      },
+      "role": "link_farm_neighbor"
+    },
+    "user_lurker_44": {
+      "features": {
+        "external_link_rate": 0.0,
+        "interaction_strength": 0.08,
+        "post_rate_norm": 0.05,
+        "profile_age_norm": 0.66,
+        "profile_realness": 0.75,
+        "report_rate": 0.01,
+        "shared_audience_overlap": 0.02,
+        "trust_score": 0.7
+      },
+      "role": "ordinary_neighbor"
+    },
+    "user_mod_09": {
+      "features": {
+        "external_link_rate": 0.01,
+        "interaction_strength": 0.18,
+        "post_rate_norm": 0.18,
+        "profile_age_norm": 0.91,
+        "profile_realness": 0.98,
+        "report_rate": 0.02,
+        "shared_audience_overlap": 0.05,
+        "trust_score": 0.94
+      },
+      "role": "ordinary_neighbor"
+    },
+    "user_target": {
+      "features": {
+        "external_link_rate": 0.18,
+        "interaction_strength": 0.0,
+        "post_rate_norm": 0.48,
+        "profile_age_norm": 0.72,
+        "profile_realness": 0.7,
+        "report_rate": 0.23,
+        "shared_audience_overlap": 0.0,
+        "trust_score": 0.5
+      },
+      "role": "target_profile"
+    }
+  },
+  "target": "user_target"
+}

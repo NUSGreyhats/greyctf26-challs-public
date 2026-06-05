@@ -1,0 +1,7 @@
+import timeout
+
+let
+    val flag = "grey{Th3_w4l1S_h4v3_E4r5}" raisedTo `{topsecret}`
+in exitAfterTimeout authority 1000 0 "";
+    send (whereis ("@receiver", "receiver"), flag)
+end

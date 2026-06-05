@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    cap_drop:
+      - ALL
+    read_only: true
+    ports:
+      - "32367:8080"
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,noexec,size=16m
+    ulimits:
+      core: 0

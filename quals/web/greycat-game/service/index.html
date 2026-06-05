@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreyCat Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="intro">
+      <h1>GreyCat Game</h1>
+      <div class="hud-copy">
+        <span>`space` / `up` jump</span>
+        <span>`r` restart</span>
+      </div>
+    </section>
+
+    <section class="game-wrap">
+      <div class="scanlines" aria-hidden="true"></div>
+      <canvas id="game" width="960" height="360" aria-label="GreyCat Game"></canvas>
+      <div class="overlay" id="overlay">
+        <p class="overlay-title">Press space to run</p>
+        <p class="overlay-subtitle">Flags rarely sit in the foreground.</p>
+      </div>
+      <div class="hud">
+        <div class="scoreline">
+          <span>HI</span>
+          <span id="highScore">00000</span>
+          <span>SCORE</span>
+          <span id="score">00000</span>
+        </div>
+        <div class="statusline">
+          <span id="stateLabel">IDLE</span>
+          <span id="hintLabel"></span>
+        </div>
+      </div>
+      <div class="terrain-meta" aria-hidden="true">
+        <span data-scrap="grey{hop_hop_"></span>
+        <span data-scrap="like_the_"></span>
+        <span data-scrap="trex}"></span>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

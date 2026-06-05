@@ -1,0 +1,15 @@
+service caexor
+{
+    disable         = no
+    socket_type     = stream
+    protocol        = tcp
+    port            = 30002
+    wait            = no
+    user            = root
+    server          = /usr/local/bin/python
+    server_args     = /app/chal.py
+    type            = UNLISTED
+    per_source      = 5
+    rlimit_cpu      = 2
+    flags           = IPv4
+}

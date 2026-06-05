@@ -1,0 +1,34 @@
+<nav class="navbar">
+  <a class="brand" href="/">LaaS</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    {{#authenticated}}
+      <a href="/profile">Profile</a>
+      <span class="nav-user">Hi, {{user.username}}</span>
+      <a href="/logout">Logout</a>
+    {{/authenticated}}
+    {{^authenticated}}
+      <a href="#" class="login-trigger">Login</a>
+      <a href="/register">Register</a>
+    {{/authenticated}}
+  </div>
+</nav>
+
+{{^authenticated}}
+<div id="login-modal" class="modal hidden">
+  <div class="modal-card">
+    <h2>Login</h2>
+    {{#error}}
+      <p class="alert">{{.}}</p>
+    {{/error}}
+    <form action="/login" method="post">
+      <label>Username</label>
+      <input type="text" name="username" required>
+      <label>Password</label>
+      <input type="password" name="password" required>
+      <button type="submit">Sign in</button>
+    </form>
+    <button type="button" class="modal-close">Close</button>
+  </div>
+</div>
+{{/authenticated}}

@@ -1,0 +1,16 @@
+# Name
+
+baby-bof
+
+# Description
+
+We identified a stack buffer overflow in the `index.cgi` program. Can you exploit it?
+
+# Author
+
+jro
+
+# Flag
+
+`grey{5tuck_th3_l4nd1ng_w1th_3xc3pt10n4l_p3rf0rm4nc3_3b6ab6b4}`
+

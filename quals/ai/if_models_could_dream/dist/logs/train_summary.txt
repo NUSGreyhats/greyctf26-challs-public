@@ -1,0 +1,24 @@
+training summary
+----------------
+
+environment: MiniGrid-LockedRoom-v0
+wrapper: RGBImgPartialObsWrapper(tile_size=8) + ImgObsWrapper
+observation: RGB partial view, 56x56x3
+
+checkpoint: final
+status: exported
+expert_trajectories: 400
+exploration_episodes: 400
+expert_correction_trajectories: 134
+actor_optimizer_steps: 1800
+actor_final_loss: 0.150791
+rl_updates: 160
+rl_env_count: 24
+rl_rollout_len: 32
+rl_recent_success_rate: 0.920
+world_optimizer_steps: 1800
+world_final_loss: 0.069253
+train_success_rate: 0.940
+held_out_success_rate: 0.980
+max_real_task_reward: 0.891053
+mean_real_task_reward: 0.608442

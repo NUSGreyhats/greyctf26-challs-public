@@ -1,0 +1,7 @@
+services:
+  challenge:
+    container_name: misc-an-old-soviet-terminal
+    build: ./service
+    ports:
+      - 36167:5000
+    privileged: true

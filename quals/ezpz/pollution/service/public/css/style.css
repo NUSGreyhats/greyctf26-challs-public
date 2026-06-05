@@ -1,0 +1,134 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #222;
+  background: #fafafa;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+.brand {
+  font-weight: 700;
+  text-decoration: none;
+  color: #111;
+}
+
+.nav-links a,
+.nav-user {
+  margin-left: 1rem;
+  text-decoration: none;
+  color: #333;
+}
+
+.page {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.page.narrow {
+  max-width: 420px;
+}
+
+.muted {
+  color: #666;
+}
+
+.alert {
+  background: #fde8e8;
+  color: #8b1c1c;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+}
+
+.alert.success {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+form label {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+form input,
+form textarea,
+form button {
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.5rem;
+  font: inherit;
+}
+
+form button {
+  margin-top: 1rem;
+  cursor: pointer;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+
+.profile-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #eee;
+}
+
+.role {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #666;
+}
+
+.panel {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: min(360px, 90vw);
+}
+
+.modal-close {
+  margin-top: 0.75rem;
+  width: 100%;
+}

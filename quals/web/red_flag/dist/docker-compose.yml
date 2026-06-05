@@ -1,0 +1,6 @@
+services:
+  red_flag:
+    image: red_flag:latest
+    ports:
+      - "34367:8080"
+    restart: unless-stopped

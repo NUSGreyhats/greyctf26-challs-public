@@ -1,0 +1,21 @@
+{
+  "name": "67-flight",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "start": "DIAGNOSTIC_PAGE=true node backend/server.js",
+    "start:backend": "DIAGNOSTIC_PAGE=true node backend/server.js",
+    "start:frontend": "node frontend/dev-server.js",
+    "start:solve": "node solve/server.js",
+    "validate:gesture-loop": "node solve/scripts/validate-gesture-loop.mjs",
+    "solve:record-loop": "node solve/scripts/record-loop.mjs",
+    "solve:build-video": "node solve/scripts/build-video-solve.mjs",
+    "solve:transform": "node solve/scripts/transform-trace.mjs",
+    "solve:suite": "node solve/scripts/run-solve-suite.mjs",
+    "test:snapshot": "node scripts/test-snapshot-challenges.mjs",
+    "test:video": "node scripts/test-video-stream.mjs",
+    "check": "node --check backend/server.js && node --check shared/frontend-client.js && node --check shared/game-core.js && node --check solve/lib/altitude-hold.js && node --check solve/lib/flap-solver.js && node --check solve/lib/gesture-loop.js && node --check solve/lib/gesture-solve.js && node --check solve/lib/solve-suite.js && node --check solve/lib/video-solve.js && node --check solve/scripts/run-solve-suite.mjs && node --check solve/scripts/build-video-solve.mjs && node --check solve/scripts/build-solve-pack.mjs && node --check solve/scripts/record-loop.mjs && node --check solve/scripts/transform-trace.mjs && node --check solve/scripts/validate-gesture-loop.mjs && node --check solve/scripts/lib/trace-utils.mjs && node --check solve/scripts/lib/hand-samples.mjs && node --check solve/scripts/lib/gesture-solve.mjs && node --check scripts/test-snapshot-challenges.mjs && node --check scripts/test-video-stream.mjs && node --check scripts/simulate-hands.mjs && node --check frontend/src/app.js && node --check frontend/src/diagnostics.js && node --check frontend/src/gesture.js && node --check frontend/dev-server.js && node --check solve/server.js && node --check solve/frontend/src/app.js && node --check solve/frontend/src/gesture.js"
+  }
+}

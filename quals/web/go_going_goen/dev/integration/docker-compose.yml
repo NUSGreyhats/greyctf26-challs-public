@@ -1,0 +1,120 @@
+services:
+  ctfd-db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: ctfd
+      MARIADB_USER: ctfd
+      MARIADB_PASSWORD: ctfd
+      MARIADB_DATABASE: ctfd
+      MARIADB_AUTO_UPGRADE: "1"
+    command:
+      [
+        mysqld,
+        --character-set-server=utf8mb4,
+        --collation-server=utf8mb4_unicode_ci,
+        --wait_timeout=28800,
+        --log-warnings=0,
+      ]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - integration
+
+  ctfd-cache:
+    image: redis:4
+    networks:
+      - integration
+
+  ctfd:
+    image: ctfd/ctfd:3.8.5
+    platform: linux/amd64
+    ports:
+      - "8001:8000"
+    environment:
+      SECRET_KEY: integration-secret-key
+      DATABASE_URL: mysql+pymysql://ctfd:ctfd@ctfd-db/ctfd
+      REDIS_URL: redis://ctfd-cache:6379
+      WORKERS: 1
+      LOG_FOLDER: /var/log/CTFd
+      ACCESS_LOG: "-"
+      ERROR_LOG: "-"
+      REVERSE_PROXY: "true"
+      PRESET_ADMIN_NAME: admin
+      PRESET_ADMIN_PASSWORD: Password123!
+      PRESET_ADMIN_EMAIL: admin@example.com
+      PRESET_CONFIGS: >-
+        {"setup": true, "ctf_name": "Go Going Goen Integration", "user_mode": "teams",
+        "team_token_plugin_secret": "dev-plugin-secret-for-testing",
+        "team_token_resolve_enabled": true}
+    volumes:
+      - ./vendor/ctfd-team-token-plugin/plugin/team-token:/opt/CTFd/CTFd/plugins/team-token:ro
+    depends_on:
+      ctfd-db:
+        condition: service_healthy
+      ctfd-cache:
+        condition: service_started
+    networks:
+      - integration
+
+  db:
+    image: postgres:18
+    command: ["postgres", "-c", "max_connections=250"]
+    environment:
+      POSTGRES_DB: go_going_goen
+      POSTGRES_USER: gogoinggoen_pg_user
+      POSTGRES_PASSWORD: integration_pg_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gogoinggoen_pg_user -d go_going_goen"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ../db/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - integration
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: go_going_goen:integration
+    ports:
+      - "8002:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@127.0.0.1:6432/go_going_goen
+      DATABASE_ADMIN_URL: postgresql+psycopg://gogoinggoen_pg_user:integration_pg_password@db:5432/go_going_goen
+      PGBOUNCER_DB_HOST: db
+      PGBOUNCER_DB_PORT: "5432"
+      PGBOUNCER_DB_NAME: go_going_goen
+      PGBOUNCER_DB_USER: gogoinggoen_app
+      PGBOUNCER_DB_PASSWORD: gogoinggoen_app_password
+      PGBOUNCER_LISTEN_PORT: "6432"
+      PGBOUNCER_POOL_MODE: transaction
+      PGBOUNCER_MAX_CLIENT_CONN: "1000"
+      PGBOUNCER_DEFAULT_POOL_SIZE: "200"
+      PGBOUNCER_CLIENT_USER: postgres
+      PGBOUNCER_CLIENT_PASSWORD: postgres
+      SESSION_SECRET: integration_session_secret_0123456789abcdef0123456789abcdef
+      PINPOINT_SECRET: integration_pinpoint
+      TEAM_ID_SALT: integration_team_id_salt_0123456789abcdef0123456789ab
+      CTFD_RESOLVE_URL: http://ctfd:8000/plugins/team-token/api/v1/resolve
+      CTFD_TEAM_TOKEN_PLUGIN_SECRET: dev-plugin-secret-for-testing
+      CTFD_CHALLENGE_ID: ${CTFD_CHALLENGE_ID:-1}
+      FLAG: grey{integration_test_flag}
+      APP_LIMIT_CONCURRENCY: "300"
+      METRICS_TOKEN: integration_metrics_token_for_local_testing_only
+      ADMIN_TOKEN: integration_admin_token_for_local_testing_only
+    depends_on:
+      db:
+        condition: service_healthy
+      ctfd:
+        condition: service_started
+    networks:
+      - integration
+
+networks:
+  integration:
+    name: go_going_goen_integration

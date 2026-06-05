@@ -1,0 +1,7 @@
+services:
+  challenge:
+    container_name: ezpz-pwn-baby_heap
+    build: service
+    privileged: true
+    ports:
+        - 31367:5000

@@ -1,0 +1,10 @@
+.git
+.gitignore
+node_modules
+service/node_modules
+challenge_setup
+solution
+greycat-runner.zip
+NOTES.md
+README.md
+progress.md

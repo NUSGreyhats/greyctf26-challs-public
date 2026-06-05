@@ -1,0 +1,48 @@
+services:
+  hand-landmarks:
+    build:
+      context: .
+      dockerfile: hand-landmarks/Dockerfile
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8790
+      HAND_LANDMARK_MODEL: /models/hand_landmarker.task
+    ports:
+      - "8790:8790"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8790/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    depends_on:
+      - hand-landmarks
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8787
+      NODE_ENV: production
+      DIAGNOSTIC_PAGE: "${DIAGNOSTIC_PAGE:-true}"
+      SPACE_67_KEYBOARD: "${SPACE_67_KEYBOARD:-false}"
+      DISABLE_ANTI_CHEAT: "${DISABLE_ANTI_CHEAT:-false}"
+      CLIENT_SIM: "${CLIENT_SIM:-true}"
+      VERIFY_SCORE_THRESHOLD: "${VERIFY_SCORE_THRESHOLD:-50}"
+      SNAPSHOT_CHALLENGES: "${SNAPSHOT_CHALLENGES:-true}"
+      SNAPSHOT_MIN_REQUIRED: "${SNAPSHOT_MIN_REQUIRED:-10}"
+      SNAPSHOT_DEADLINE_MS: "${SNAPSHOT_DEADLINE_MS:-1200}"
+      SNAPSHOT_LANDMARK_MODE: "${SNAPSHOT_LANDMARK_MODE:-required}"
+      HAND_LANDMARK_SERVICE_URL: "${HAND_LANDMARK_SERVICE_URL:-http://hand-landmarks:8790/landmarks}"
+      HAND_LANDMARK_MAX_ANCHOR_DELTA: "${HAND_LANDMARK_MAX_ANCHOR_DELTA:-0.1}"
+      HAND_LANDMARK_TIMEOUT_MS: "${HAND_LANDMARK_TIMEOUT_MS:-1200}"
+      VIDEO_VERIFY_MODE: "${VIDEO_VERIFY_MODE:-required}"
+      VIDEO_VERIFY_MIN_FRAMES: "${VIDEO_VERIFY_MIN_FRAMES:-80}"
+      VIDEO_VERIFY_MIN_VALID_FRAMES: "${VIDEO_VERIFY_MIN_VALID_FRAMES:-70}"
+      VIDEO_VERIFY_MIN_AVERAGE_FPS: "${VIDEO_VERIFY_MIN_AVERAGE_FPS:-4}"
+      FLAG: "${FLAG:-grey{placeholder_6767}}"
+    ports:
+      - "8787:8787"
+    restart: unless-stopped

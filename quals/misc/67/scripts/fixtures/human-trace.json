@@ -1,0 +1,688 @@
+{
+  "version": 1,
+  "createdAt": "2026-05-25T17:33:47.166Z",
+  "target": "ws://127.0.0.1:8787/ws",
+  "startedAt": 1779730427199,
+  "completedAt": "2026-05-25T17:33:49.660Z",
+  "result": "game-over",
+  "score": 0,
+  "handSamples": 75,
+  "flaps": 0,
+  "events": [
+    {
+      "atMs": 0,
+      "message": {
+        "type": "hands",
+        "leftY": 0.7026852369308472,
+        "rightY": 0.46618038415908813,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 27,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5105468034744263,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 61,
+      "message": {
+        "type": "hands",
+        "leftY": 0.7391462922096252,
+        "rightY": 0.5594728589057922,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 88,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6474835872650146,
+        "rightY": 0.6427369117736816,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 117,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5861700177192688,
+        "rightY": 0.6686726212501526,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 152,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5717594623565674,
+        "rightY": 0.6327422857284546,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 185,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5972433686256409,
+        "rightY": 0.5929871201515198,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 224,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6382427215576172,
+        "rightY": 0.5785365700721741,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 256,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6760253310203552,
+        "rightY": 0.5882300734519958,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 297,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6901693344116211,
+        "rightY": 0.613461971282959,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 318,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6727068424224854,
+        "rightY": 0.6346442699432373,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 353,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6632100343704224,
+        "rightY": 0.6423124074935913,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 393,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6501739621162415,
+        "rightY": 0.6351274251937866,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 422,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6520580649375916,
+        "rightY": 0.6280014514923096,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 451,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6619865894317627,
+        "rightY": 0.6120655536651611,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 486,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6726347804069519,
+        "rightY": 0.6001257300376892,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 525,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6066600680351257,
+        "rightY": 0.6050856113433838,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 550,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5458980202674866,
+        "rightY": 0.6535249352455139,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 581,
+      "message": {
+        "type": "hands",
+        "leftY": 0.46128642559051514,
+        "rightY": 0.696433424949646,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 623,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.7149277329444885,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 653,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.6681748032569885,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 687,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5948490500450134,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 717,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.4994528591632843,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 758,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6313419342041016,
+        "rightY": 0.4705035388469696,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 787,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.465259313583374,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 825,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.4991014301776886,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 858,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5603222250938416,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 893,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.6901034116744995,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 919,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.710817277431488,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 950,
+      "message": {
+        "type": "hands",
+        "leftY": 0.45288291573524475,
+        "rightY": 0.6474316120147705,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 980,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5550333261489868,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1028,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.48273205757141113,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1055,
+      "message": {
+        "type": "hands",
+        "leftY": 0.8424570560455322,
+        "rightY": 0.47246432304382324,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1094,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.4931189715862274,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1130,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5557900667190552,
+        "rightY": null,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1165,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.6973496079444885,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1188,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.7289325594902039,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1224,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.6980743408203125,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1259,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5866905450820923,
+        "rightY": 0.5901017785072327,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1287,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": null,
+        "handCount": 0
+      }
+    },
+    {
+      "atMs": 1333,
+      "message": {
+        "type": "hands",
+        "leftY": 0.7292971014976501,
+        "rightY": 0.47575643658638,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1354,
+      "message": {
+        "type": "hands",
+        "leftY": 0.640641987323761,
+        "rightY": 0.464333176612854,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1384,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5001976490020752,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1428,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5438092350959778,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1456,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.6525929570198059,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1482,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.7149755954742432,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1518,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5485767126083374,
+        "rightY": 0.6793226003646851,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1552,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5856530070304871,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1586,
+      "message": {
+        "type": "hands",
+        "leftY": 0.8155329823493958,
+        "rightY": 0.543700635433197,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1615,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5265059471130371,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1661,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6141601800918579,
+        "rightY": 0.5032457113265991,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1685,
+      "message": {
+        "type": "hands",
+        "leftY": 0.5281611680984497,
+        "rightY": 0.5375217199325562,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1725,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.6317297220230103,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1750,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.725125253200531,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1796,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.7119684815406799,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1817,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.6050838828086853,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1859,
+      "message": {
+        "type": "hands",
+        "leftY": 0.7884349822998047,
+        "rightY": 0.5571064949035645,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 1887,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.5597870349884033,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1920,
+      "message": {
+        "type": "hands",
+        "leftY": null,
+        "rightY": 0.538600504398346,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1957,
+      "message": {
+        "type": "hands",
+        "leftY": 0.620483934879303,
+        "rightY": null,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 1980,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6527759432792664,
+        "rightY": null,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 2024,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6576537489891052,
+        "rightY": null,
+        "handCount": 1
+      }
+    },
+    {
+      "atMs": 2059,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6751101613044739,
+        "rightY": 0.6195192933082581,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2079,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6914724111557007,
+        "rightY": 0.6064026951789856,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2120,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6914119720458984,
+        "rightY": 0.6077789068222046,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2149,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6891394257545471,
+        "rightY": 0.6047212481498718,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2190,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6791112422943115,
+        "rightY": 0.6119225025177002,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2215,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6797427535057068,
+        "rightY": 0.6177971959114075,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2247,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6780713200569153,
+        "rightY": 0.6274699568748474,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2296,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6850240230560303,
+        "rightY": 0.6327884197235107,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2316,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6923772096633911,
+        "rightY": 0.6376328468322754,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2353,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6928831934928894,
+        "rightY": 0.6404210329055786,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2398,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6933746337890625,
+        "rightY": 0.6460244655609131,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2420,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6902848482131958,
+        "rightY": 0.6491838097572327,
+        "handCount": 2
+      }
+    },
+    {
+      "atMs": 2453,
+      "message": {
+        "type": "hands",
+        "leftY": 0.6821664571762085,
+        "rightY": 0.6516194939613342,
+        "handCount": 2
+      }
+    }
+  ]
+}

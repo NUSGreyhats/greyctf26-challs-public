@@ -1,0 +1,7 @@
+services:
+  challenge:
+    container_name: pwn-elite_ball_knowledge
+    build: service
+    privileged: true
+    ports:
+        - 32267:5000

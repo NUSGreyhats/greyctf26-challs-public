@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:18
+    command: ["postgres", "-c", "max_connections=${POSTGRES_MAX_CONNECTIONS:-250}"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-go_going_goen}
+      POSTGRES_USER: ${POSTGRES_USER:-gogoinggoen_pg_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-61622f97d222b7bf2b7fef3ca48fbce7112ca7d039440ca6d5d5561de4aec0bc}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gogoinggoen_pg_user} -d ${POSTGRES_DB:-go_going_goen}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./dev/db/init:/docker-entrypoint-initdb.d:ro
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: go_going_goen:latest
+    environment:
+      DATABASE_ADMIN_URL: ${DATABASE_ADMIN_URL:-postgresql+psycopg://${POSTGRES_USER:-gogoinggoen_pg_user}:${POSTGRES_PASSWORD:-61622f97d222b7bf2b7fef3ca48fbce7112ca7d039440ca6d5d5561de4aec0bc}@db:5432/${POSTGRES_DB:-go_going_goen}}
+      PGBOUNCER_DB_HOST: ${PGBOUNCER_DB_HOST:-db}
+      PGBOUNCER_DB_PORT: ${PGBOUNCER_DB_PORT:-5432}
+      PGBOUNCER_DB_NAME: ${PGBOUNCER_DB_NAME:-go_going_goen}
+      PGBOUNCER_DB_USER: ${PGBOUNCER_DB_USER:-gogoinggoen_app}
+      PGBOUNCER_DB_PASSWORD: ${PGBOUNCER_DB_PASSWORD:-gogoinggoen_app_password}
+      PGBOUNCER_LISTEN_PORT: ${PGBOUNCER_LISTEN_PORT:-0}
+      PGBOUNCER_POOL_MODE: ${PGBOUNCER_POOL_MODE:-transaction}
+      PGBOUNCER_MAX_CLIENT_CONN: ${PGBOUNCER_MAX_CLIENT_CONN:-1000}
+      PGBOUNCER_DEFAULT_POOL_SIZE: ${PGBOUNCER_DEFAULT_POOL_SIZE:-200}
+      PGBOUNCER_MIN_POOL_SIZE: ${PGBOUNCER_MIN_POOL_SIZE:-0}
+      PGBOUNCER_RESERVE_POOL_SIZE: ${PGBOUNCER_RESERVE_POOL_SIZE:-0}
+      PGBOUNCER_QUERY_WAIT_TIMEOUT: ${PGBOUNCER_QUERY_WAIT_TIMEOUT:-120}
+      PGBOUNCER_CLIENT_IDLE_TIMEOUT: ${PGBOUNCER_CLIENT_IDLE_TIMEOUT:-60}
+      PGBOUNCER_SERVER_IDLE_TIMEOUT: ${PGBOUNCER_SERVER_IDLE_TIMEOUT:-30}
+      PGBOUNCER_SERVER_LIFETIME: ${PGBOUNCER_SERVER_LIFETIME:-600}
+      PGBOUNCER_CLIENT_USER: ${PGBOUNCER_CLIENT_USER:-postgres}
+      PGBOUNCER_CLIENT_PASSWORD: ${PGBOUNCER_CLIENT_PASSWORD:-postgres}
+      SESSION_SECRET: ${SESSION_SECRET:-b5b12bc5bbb4d93abd08363125ba3217bedcdb276d294c41473acc513da40efb}
+      PINPOINT_SECRET: ${PINPOINT_SECRET:-7ae5255ada894bca}
+      PINPOINT_DIAGNOSTICS_TARGET_MS: ${PINPOINT_DIAGNOSTICS_TARGET_MS:-20}
+      PINPOINT_DIAGNOSTICS_ATTEST_ROUNDS: ${PINPOINT_DIAGNOSTICS_ATTEST_ROUNDS:-}
+      SINGLETON_USERNAME: ${SINGLETON_USERNAME:-team}
+      TEAM_ID_SALT: ${TEAM_ID_SALT:-30dca98af37e7913b740c658289619c11b16b5a87046030c602b7895a26af664}
+      CTFD_RESOLVE_URL: ${CTFD_RESOLVE_URL:-https://ctfd.nusgreyhats.org/plugins/team-token/api/v1/resolve}
+      CTFD_TEAM_TOKEN_PLUGIN_SECRET: ${CTFD_TEAM_TOKEN_PLUGIN_SECRET:-9bba6571341a220df792ef35e9ec73f5a17b466d151ed685e6b46b4d06a9020a}
+      CTFD_CHALLENGE_ID: ${CTFD_CHALLENGE_ID:-11}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      FLAG: ${FLAG:-grey{re4D_c0mm1tTed_wIl1_n0t_s4v3_Y0u}}
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+      APP_LIMIT_CONCURRENCY: ${APP_LIMIT_CONCURRENCY:-300}
+      APP_BACKLOG: ${APP_BACKLOG:-128}
+      APP_TIMEOUT_KEEP_ALIVE: ${APP_TIMEOUT_KEEP_ALIVE:-5}
+      METRICS_TOKEN: ${METRICS_TOKEN:-58a3e3e137d8117321b04138b3d4d9d7f27c8503a2ba2fba625c0510b065d563}
+      DB_SLOW_QUERY_SECONDS: ${DB_SLOW_QUERY_SECONDS:-0.1}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      # Only the assigned host port is published. The app itself listens on
+      # the fixed in-container HTTP port 8000.
+      - "${BACKEND_PUBLISH_PORT:-34167}:8000"

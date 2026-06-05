@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Join SeeTeeEffedIn</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell auth-shell">
+      <header class="topbar">
+        <a class="brand" href="/">
+          <div class="brand-mark">in</div>
+          <div class="brand-copy">
+            <strong>SeeTeeEffedIn</strong>
+            <span>Join the network or sign back in.</span>
+          </div>
+        </a>
+        <div class="topbar-side">
+          <a class="secondary-button" href="/auth.html#signin" data-guest-only
+            >Sign in</a
+          >
+          <a class="primary-button" href="/auth.html#register" data-guest-only
+            >Register</a
+          >
+          <a class="secondary-button hidden" href="/profile.html" data-auth-only
+            >View profile</a
+          >
+          <button
+            class="ghost-button hidden"
+            data-auth-only
+            data-logout
+            type="button"
+          >
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <section class="center-layout">
+        <section class="hero-card">
+          <div class="hero-grid">
+            <div>
+              <div class="eyebrow">Professional community</div>
+              <h1 class="headline">
+                Join a denser feed with simpler identity.
+              </h1>
+              <p class="body-copy">
+                Create public-facing and private-facing handles, a profile
+                name, and a short bio. Once you are in, posting and profile
+                management are split cleanly across dedicated pages.
+              </p>
+            </div>
+            <div class="metric-grid">
+              <div class="metric-card">
+                <strong>Feed-first</strong>
+                <span>Public updates are readable without signing in.</span>
+              </div>
+              <div class="metric-card">
+                <strong>Lightweight profile</strong>
+                <span
+                  >One public-facing handle, one private-facing handle, one
+                  clear edit flow.</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="layout-2">
+          <section class="panel" id="register">
+            <div class="section-tag">Join</div>
+            <h2>Create your account</h2>
+            <p class="body-copy">
+              Pick the public-facing handle people will see in the feed and the
+              private-facing handle used for your own session.
+            </p>
+            <form id="register-form">
+              <label
+                >Public-facing username<input
+                  id="register-public-username"
+                  maxlength="64"
+                  autocomplete="username"
+                  placeholder="handle_2026"
+              /></label>
+              <label
+                >Private-facing username<input
+                  id="register-private-username"
+                  maxlength="64"
+                  autocomplete="off"
+                  placeholder="private_handle_2026"
+              /></label>
+              <label
+                >Password<input
+                  id="register-password"
+                  type="password"
+                  maxlength="128"
+                  autocomplete="new-password"
+                  placeholder="minimum 8 characters"
+              /></label>
+              <label
+                >Display name<input
+                  id="register-display-name"
+                  maxlength="80"
+                  autocomplete="nickname"
+                  placeholder="Night Shift Archivist"
+              /></label>
+              <label
+                >Bio<textarea
+                  id="register-bio"
+                  maxlength="240"
+                  placeholder="A short line about what you work on."
+                ></textarea>
+              </label>
+              <div class="actions">
+                <button class="primary-button" type="submit">
+                  Create account
+                </button>
+              </div>
+            </form>
+            <div class="status" id="register-status"></div>
+          </section>
+
+          <section class="panel" id="signin">
+            <div class="section-tag">Sign in</div>
+            <h2>Return to the feed</h2>
+            <p class="body-copy">
+              Use both handles and your password to continue where you left off.
+            </p>
+            <form id="login-form">
+              <label
+                >Public-facing username<input
+                  id="login-public-username"
+                  autocomplete="username"
+                  placeholder="demo_user"
+              /></label>
+              <label
+                >Private-facing username<input
+                  id="login-private-username"
+                  autocomplete="off"
+                  placeholder="demo_private"
+              /></label>
+              <label
+                >Password<input
+                  id="login-password"
+                  type="password"
+                  maxlength="128"
+                  autocomplete="current-password"
+                  placeholder="minimum 8 characters"
+              /></label>
+              <div class="actions">
+                <button class="primary-button" type="submit">Sign in</button>
+              </div>
+            </form>
+            <div class="status" id="login-status"></div>
+          </section>
+        </section>
+      </section>
+    </div>
+
+    <script type="module">
+      import {
+        api,
+        loadProfile,
+        renderViewer,
+        setSessionToken,
+        setStatus,
+        wireChrome,
+      } from "/app.js";
+
+      wireChrome();
+      renderViewer(await loadProfile().catch(() => null));
+
+      const registerStatusEl = document.getElementById("register-status");
+      const loginStatusEl = document.getElementById("login-status");
+
+      document
+        .getElementById("register-form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          setStatus(registerStatusEl, "Creating account...");
+          setStatus(loginStatusEl, "");
+          try {
+            const data = await api("/api/register", {
+              method: "POST",
+              body: JSON.stringify({
+                public_username: document.getElementById(
+                  "register-public-username",
+                ).value,
+                private_username: document.getElementById(
+                  "register-private-username",
+                ).value,
+                password: document.getElementById("register-password").value,
+                display_name: document.getElementById("register-display-name")
+                  .value,
+                bio: document.getElementById("register-bio").value,
+              }),
+            });
+            setSessionToken(data.session_token);
+            window.location.href = "/";
+          } catch (error) {
+            setStatus(registerStatusEl, error.message, "error");
+          }
+        });
+
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          setStatus(loginStatusEl, "Signing in...");
+          setStatus(registerStatusEl, "");
+          try {
+            const data = await api("/api/login", {
+              method: "POST",
+              body: JSON.stringify({
+                public_username: document.getElementById(
+                  "login-public-username",
+                ).value,
+                private_username: document.getElementById(
+                  "login-private-username",
+                ).value,
+                password: document.getElementById("login-password").value,
+              }),
+            });
+            setSessionToken(data.session_token);
+            window.location.href = "/";
+          } catch (error) {
+            setStatus(loginStatusEl, error.message, "error");
+          }
+        });
+    </script>
+  </body>
+</html>

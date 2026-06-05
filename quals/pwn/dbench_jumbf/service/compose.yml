@@ -1,0 +1,7 @@
+services:
+  dbench_jumbf:
+    build: .
+    ports:
+      - "32167:1337"
+    privileged: true
+    restart: unless-stopped

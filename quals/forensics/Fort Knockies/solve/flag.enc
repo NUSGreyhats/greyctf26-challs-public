@@ -1,0 +1,9 @@
+{
+  "version": "FKENC0",
+  "kdf": "PBKDF2-HMAC-SHA1",
+  "iterations": 64000,
+  "cipher": "AES-256-CBC",
+  "salt_b64": "9qW0MqW58JB3Hu8isSIsSA==",
+  "iv_b64": "ontEVTaTKHwq29dPQ1WDFw==",
+  "ciphertext_b64": "Q28ivaOPv9NJ9CoLAPyoA4zBuRp+CNLdOi7Su2If7Aa4xdpD4HV49VLehgNICm3i"
+}

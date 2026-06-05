@@ -1,0 +1,7 @@
+dist/
+data/
+uploads/
+__pycache__/
+*.pyc
+*.md
+.git/

@@ -1,0 +1,12 @@
+*
+!Dockerfile
+!docker-compose.yml
+!.dockerignore
+!THIRD_PARTY_LICENSES.md
+!Makefile
+!server.cpp
+!server
+!run
+!flag.txt
+!dbench_jumbf/
+!dbench_jumbf/**

@@ -1,0 +1,108 @@
+{
+  "new_edges": [
+    [
+      "user_target",
+      "friend_00"
+    ],
+    [
+      "user_target",
+      "friend_01"
+    ],
+    [
+      "user_target",
+      "friend_02"
+    ],
+    [
+      "user_target",
+      "friend_03"
+    ],
+    [
+      "user_target",
+      "friend_04"
+    ],
+    [
+      "user_target",
+      "friend_05"
+    ]
+  ],
+  "new_nodes": [
+    {
+      "features": {
+        "external_link_rate": 0.0604,
+        "interaction_strength": 0.84,
+        "post_rate_norm": 0.16,
+        "profile_age_norm": 0.4,
+        "profile_realness": 0.999503,
+        "report_rate": 0.0748,
+        "shared_audience_overlap": 0.88,
+        "trust_score": 0.999372
+      },
+      "id": "friend_00"
+    },
+    {
+      "features": {
+        "external_link_rate": 0.0532,
+        "interaction_strength": 0.82,
+        "post_rate_norm": 0.22,
+        "profile_age_norm": 0.352,
+        "profile_realness": 0.99983,
+        "report_rate": 0.082,
+        "shared_audience_overlap": 0.9,
+        "trust_score": 0.999448
+      },
+      "id": "friend_01"
+    },
+    {
+      "features": {
+        "external_link_rate": 0.046,
+        "interaction_strength": 0.8,
+        "post_rate_norm": 0.28,
+        "profile_age_norm": 0.304,
+        "profile_realness": 0.99948,
+        "report_rate": 0.0892,
+        "shared_audience_overlap": 0.92,
+        "trust_score": 0.99977
+      },
+      "id": "friend_02"
+    },
+    {
+      "features": {
+        "external_link_rate": 0.0388,
+        "interaction_strength": 0.78,
+        "post_rate_norm": 0.34,
+        "profile_age_norm": 0.256,
+        "profile_realness": 0.999569,
+        "report_rate": 0.0964,
+        "shared_audience_overlap": 0.94,
+        "trust_score": 0.999702
+      },
+      "id": "friend_03"
+    },
+    {
+      "features": {
+        "external_link_rate": 0.0316,
+        "interaction_strength": 0.76,
+        "post_rate_norm": 0.4,
+        "profile_age_norm": 0.208,
+        "profile_realness": 0.999605,
+        "report_rate": 0.1036,
+        "shared_audience_overlap": 0.96,
+        "trust_score": 0.999954
+      },
+      "id": "friend_04"
+    },
+    {
+      "features": {
+        "external_link_rate": 0.0244,
+        "interaction_strength": 0.74,
+        "post_rate_norm": 0.46,
+        "profile_age_norm": 0.16,
+        "profile_realness": 0.999376,
+        "report_rate": 0.1108,
+        "shared_audience_overlap": 0.98,
+        "trust_score": 0.999887
+      },
+      "id": "friend_05"
+    }
+  ]
+}
