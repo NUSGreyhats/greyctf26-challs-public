@@ -16,10 +16,11 @@ const copy = {
   download: {
     body: "To download a file, provide the filename in the download parameter and include the same 67-character token in the token parameter. A dummy file named test.txt is available for testing.",
     format: "<site>/?download=<filename>&token=<token>",
+    fallbackFormat: "<site>/api/vault?download=<filename>&token=<token>",
   },
 };
 
-function GuideBlock({ title, body, format, example }) {
+function GuideBlock({ title, body, format, example, fallbackFormat, fallbackExample }) {
   return (
     <div className="guide-block">
       <p>
@@ -27,6 +28,13 @@ function GuideBlock({ title, body, format, example }) {
       </p>
       <code>{format}</code>
       <span>Example: {example}</span>
+      {fallbackFormat ? (
+        <>
+          <strong>Use this fallback parameter if the format above doesn't work for downloads</strong>
+          <code>{fallbackFormat}</code>
+          <span>Fallback example: {fallbackExample}</span>
+        </>
+      ) : null}
     </div>
   );
 }
@@ -38,8 +46,10 @@ export default function App() {
   const token = params.get("token");
 
   const origin = window.location.origin + window.location.pathname;
+  const siteOrigin = window.location.origin;
   const exampleUploadUrl = `${origin}?upload=movie-night.zip&token=YOUR_67_CHARACTER_TOKEN`;
   const exampleDownloadUrl = `${origin}?download=test.txt&token=YOUR_67_CHARACTER_TOKEN`;
+  const fallbackDownloadUrl = `${siteOrigin}/api/vault?download=test.txt&token=YOUR_67_CHARACTER_TOKEN`;
 
   useEffect(() => {
     if (uploadFilename !== null) {
@@ -79,7 +89,12 @@ export default function App() {
 
           <div className="copy-stack">
             <GuideBlock title="To upload" {...copy.upload} example={exampleUploadUrl} />
-            <GuideBlock title="To download" {...copy.download} example={exampleDownloadUrl} />
+            <GuideBlock
+              title="To download"
+              {...copy.download}
+              example={exampleDownloadUrl}
+              fallbackExample={fallbackDownloadUrl}
+            />
           </div>
         </div>
       </section>

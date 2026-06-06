@@ -132,6 +132,7 @@ def run_solve_test(image):
     run(f"docker rm -f {TEST_CONTAINER} >/dev/null 2>&1 || true")
     run(
         f"docker run --rm -d --name {TEST_CONTAINER} "
+        f"-e FLAG='{FAKE_FLAG.strip()}' "
         f"-p 127.0.0.1:{TEST_PORT}:8080 {image} >/dev/null"
     )
     time.sleep(2)
@@ -177,8 +178,6 @@ def main():
     with tempfile.TemporaryDirectory(prefix="red_flag_dist_") as tmp:
         context = os.path.join(tmp, "service")
         copy_service_tree(context)
-        with open(os.path.join(context, "flag.txt"), "w") as f:
-            f.write(FAKE_FLAG)
         build_image(context, DIST_IMAGE)
 
     if not args.no_bundle:

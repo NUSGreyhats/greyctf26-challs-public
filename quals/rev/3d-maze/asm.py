@@ -246,6 +246,11 @@ def work_next(correct_idx, boost=False):
         lambda x: (x - BOOST_AMT*int(boost) + 256) % 256,
         submission
     )))
+    assert len([1
+        for x in POOL[-4:]
+        for y in (x, (x+BOOST_AMT)%256)
+        if y == OUT_2[cur]
+    ]) == 1, f'Duplicate correct option @ {cur} ({OUT_2[cur]} vs {POOL[-4:]})'
 for character in PATH:
     boost = True
     for move in character:

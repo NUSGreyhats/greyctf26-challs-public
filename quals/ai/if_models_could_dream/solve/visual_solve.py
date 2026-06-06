@@ -88,7 +88,7 @@ def save_probe(out: Path, seed: int, prefix: list[int], model: dict) -> None:
 
 
 def sample_futures(out: Path, seed: int, prefix: list[int], model: dict, samples: int) -> tuple[int, list]:
-    panel_count = int(model["rssm"]["horizon"])
+    panel_count = int(model["rssm"]["rollout_steps"])
     dream_suffix = suffix(panel_count)
     (out / "dream_suffix.txt").write_text(" ".join(map(str, dream_suffix)) + "\n", encoding="utf-8")
     belief, _, _, _ = observe_prefix(seed, prefix)

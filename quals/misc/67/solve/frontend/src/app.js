@@ -153,6 +153,7 @@ let lastVideoFrameSentAt = -Infinity;
 let latestHandSample = { leftY: null, rightY: null, handCount: 0 };
 let snapshotChallengeCount = 0;
 let snapshotAcceptedCount = 0;
+let snapshotRejectedCount = 0;
 let mode = "Connecting";
 let pingTimer = null;
 let syncState = {
@@ -743,6 +744,7 @@ function restartRun({ clearRecording = true } = {}) {
   lastVideoFrameSentAt = -Infinity;
   snapshotChallengeCount = 0;
   snapshotAcceptedCount = 0;
+  snapshotRejectedCount = 0;
   flapPulseText.textContent = "0 samples";
   resetLocalRun();
 
@@ -1425,8 +1427,20 @@ function updateInputCounters() {
 }
 
 function handleSnapshotChallenge(message) {
+  if (finishSubmitted) {
+    console.log("[snapshot] challenge ignored (run already submitted for verify)", {
+      challengeId: message.challengeId,
+    });
+    return;
+  }
+
   snapshotChallengeCount += 1;
-  statusText.textContent = `Snapshot challenge ${snapshotChallengeCount}: keep both hands visible.`;
+  console.log("[snapshot] challenge", {
+    index: snapshotChallengeCount,
+    challengeId: message.challengeId,
+    acceptedSoFar: snapshotAcceptedCount,
+    rejectedSoFar: snapshotRejectedCount,
+  });
   sendSnapshotResponse(message);
 }
 
@@ -1434,17 +1448,42 @@ function handleSnapshotResult(message) {
   if (message.accepted) {
     snapshotAcceptedCount += 1;
     statusText.textContent = `Snapshot accepted (${snapshotAcceptedCount}/${snapshotChallengeCount}).`;
-    return;
+  } else {
+    snapshotRejectedCount += 1;
+    statusText.textContent = message.message || "Snapshot challenge failed.";
   }
 
-  statusText.textContent = message.message || "Snapshot challenge failed.";
+  console.log("[snapshot] result", {
+    challengeId: message.challengeId,
+    accepted: message.accepted,
+    message: message.message,
+    acceptedCount: snapshotAcceptedCount,
+    rejectedCount: snapshotRejectedCount,
+    challengeCount: snapshotChallengeCount,
+  });
 }
 
 function sendSnapshotResponse(challenge) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     return;
   }
-  const activeFrame = scriptController?.latestVideoFrame || null;
+  let activeFrame = scriptController?.latestVideoFrame || null;
+  if (!activeFrame || scriptController?.stopped) {
+    const frames = videoSolverSource?.preparedFrames || [];
+    if (!window._usedFallbackIndices) {
+      window._usedFallbackIndices = new Set();
+    }
+    
+    let fallbackIndex = Math.floor(Math.random() * frames.length);
+    let attempts = 0;
+    while (window._usedFallbackIndices.has(fallbackIndex) && attempts < 50) {
+      fallbackIndex = Math.floor(Math.random() * frames.length);
+      attempts++;
+    }
+    window._usedFallbackIndices.add(fallbackIndex);
+    
+    activeFrame = frames[fallbackIndex] || null;
+  }
   const activeSample = activeFrame
     ? {
       leftY: activeFrame.leftY,
@@ -1463,6 +1502,7 @@ function sendSnapshotResponse(challenge) {
 
   try {
     payload.image = activeFrame?.image || captureCameraSnapshot();
+    // payload.error = "DEBUG: " + (activeFrame === scriptController?.latestVideoFrame ? "latest" : "fallback");
   } catch (error) {
     payload.image = "";
     payload.error = error.message;

@@ -27,16 +27,21 @@ if str(ROOT / "chall") not in sys.path:
     sys.path.insert(0, str(ROOT / "chall"))
 
 from clean_env import ACTIONS, load_actions, run_actions  # noqa: E402
-
-MODE_NORMAL = "m0"
-MODE_DECOY_A = "m1"
-MODE_DECOY_B = "m2"
-MODE_SIGNAL = "m3"
-MODE_DECOY_C = "m4"
-MODE_DECOY_D = "m5"
-MODE_DECOY_E = "m6"
-MODE_DECOY_F = "m7"
-MODE_MEAN = "avg"
+from world_model import (  # noqa: E402
+    MODE_DECOY_A,
+    MODE_DECOY_B,
+    MODE_DECOY_C,
+    MODE_DECOY_D,
+    MODE_DECOY_E,
+    MODE_DECOY_F,
+    MODE_MEAN,
+    MODE_NORMAL,
+    MODE_SIGNAL,
+    MODE_TO_ID,
+    WorldArch,
+    modules_for_arch,
+    tensor_frame,
+)
 
 
 @dataclass
@@ -61,7 +66,7 @@ class DreamStep:
 
 
 def load_model(model_dir: Path = MODEL_DIR) -> dict:
-    return {
+    checkpoints = {
         "config": json.loads((model_dir / "config.json").read_text(encoding="utf-8")),
         "encoder": torch.load(model_dir / "encoder.pt", map_location="cpu", weights_only=False),
         "rssm": torch.load(model_dir / "rssm.pt", map_location="cpu", weights_only=False),
@@ -70,6 +75,14 @@ def load_model(model_dir: Path = MODEL_DIR) -> dict:
         "continue": torch.load(model_dir / "continue_head.pt", map_location="cpu", weights_only=False),
         "value": torch.load(model_dir / "value_head.pt", map_location="cpu", weights_only=False),
     }
+    arch = WorldArch.from_dict(checkpoints["rssm"]["arch"])
+    modules = modules_for_arch(arch)
+    for name, module in modules.items():
+        module.load_state_dict(checkpoints[name]["state_dict"])
+        module.eval()
+    checkpoints["arch"] = arch
+    checkpoints["modules"] = modules
+    return checkpoints
 
 
 def observe_prefix(seed: int, prefix: list[int]) -> tuple[Belief, np.ndarray, dict, list[dict]]:
@@ -272,87 +285,31 @@ def decayed_continue(values: list[float], step: int, seed: int, sample_index: in
 
 
 def decode_latent_frame(model: dict, belief: Belief, latent: torch.Tensor, sharpen: bool, step: int) -> np.ndarray:
-    decoder = model["decoder"]
-    logits = latent @ decoder["readout"] + decoder["bias"]
-    levels = torch.sigmoid(logits * 3.2).numpy()
-    base = Image.fromarray(belief.anchor_frame).convert("RGB")
-    shade = Image.new("RGB", (56, 56), (34, 36, 39))
-    img = Image.blend(base, shade, 0.18)
-    draw = ImageDraw.Draw(img)
-    phase = (step // 12) % 4
-    outline = [(190, 142, 48), (165, 124, 62), (147, 132, 83), (179, 119, 84)][phase]
-    draw.rectangle([6, 11, 49, 29], outline=outline, width=1)
-    draw.rectangle([7, 17, 48, 24], fill=(51, 45, 39))
-
-    for i, level in enumerate(levels):
-        cx = 9 + i * 5
-        cy = 20
-        value = float(level)
-        if not sharpen:
-            value = 0.5 + (value - 0.5) * 0.68
-        glow = int(42 + value * 205)
-        color = (glow, int(38 + value * 150), int(27 + value * 70))
-        draw.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill=color)
-        if value > 0.65:
-            draw.point((cx, cy - 3), fill=(255, 241, 132))
-
-    if phase in {1, 3}:
-        draw.line([(6, 11), (13, 17)], fill=(143, 132, 93), width=1)
-        draw.line([(49, 11), (42, 17)], fill=(143, 132, 93), width=1)
-    return np.asarray(img, dtype=np.uint8)
+    with torch.no_grad():
+        frame = model["modules"]["decoder"](latent.reshape(1, -1))
+    return tensor_frame(frame)
 
 
 def rollout_steps(model: dict, belief: Belief, suffix: list[int], sample_index: int | None = None, deterministic: bool = False) -> list[DreamStep]:
     mode = mode_for_sample(belief, suffix, sample_index, deterministic)
     out: list[DreamStep] = []
-    latent = torch.tensor(belief.features, dtype=torch.float32) @ model["rssm"]["entry_projection"]
-    state_index = 0
-    sharpen = False
-    reward = model["reward"]
-    cont = model["continue"]
-    value = model["value"]
+    modules = model["modules"]
+    with torch.no_grad():
+        latent = modules["encoder"](torch.tensor(belief.features, dtype=torch.float32).reshape(1, -1)).squeeze(0)
     for step, action in enumerate(suffix):
         if action == 6:
             mode = MODE_DECOY_B
         elif action == 4 and mode == MODE_SIGNAL:
             mode = MODE_DECOY_A
-        if mode == MODE_SIGNAL:
-            if action == 2 and step > 0:
-                state_index += 1
-                if state_index < int(model["rssm"]["horizon"]):
-                    latent = latent @ model["rssm"]["transition"]
-                sharpen = False
-            elif action == 5:
-                sharpen = True
-            frame = decode_latent_frame(model, belief, latent, sharpen, step)
-            out.append(DreamStep(frame, float(reward[MODE_SIGNAL] if state_index else reward[f"{MODE_SIGNAL}_entry"]), float(cont[MODE_SIGNAL]), float(value[MODE_SIGNAL]), mode))
-        elif mode == MODE_DECOY_A:
-            c = decayed_continue(cont[MODE_DECOY_A], step, belief.seed, sample_index)
-            r = noisy_reward(float(reward[MODE_DECOY_A]) - 0.08 * step, step, belief.seed, sample_index, 0.42)
-            out.append(DreamStep(treasure_frame(step), r, c, float(value[MODE_DECOY_A]), mode))
-        elif mode == MODE_DECOY_C:
-            c = decayed_continue(cont[MODE_DECOY_C], step, belief.seed, sample_index)
-            r = noisy_reward(float(reward[MODE_DECOY_C]) - 0.11 * step, step, belief.seed, sample_index, 0.38)
-            out.append(DreamStep(fake_goal_frame(step), r, c, float(value[MODE_DECOY_C]), mode))
-        elif mode == MODE_DECOY_D:
-            c = decayed_continue(cont[MODE_DECOY_D], step, belief.seed, sample_index)
-            r = noisy_reward(float(reward[MODE_DECOY_D]) - 0.01 * step, step, belief.seed, sample_index, 0.55)
-            out.append(DreamStep(door_echo_frame(step), r, c, float(value[MODE_DECOY_D]), mode))
-        elif mode == MODE_DECOY_E:
-            c = decayed_continue(cont[MODE_DECOY_E], step, belief.seed, sample_index)
-            r = noisy_reward(float(reward[MODE_DECOY_E]) - 0.02 * step, step, belief.seed, sample_index, 0.72)
-            out.append(DreamStep(lava_reflection_frame(step), r, c, float(value[MODE_DECOY_E]), mode))
-        elif mode == MODE_DECOY_F:
-            c = decayed_continue(cont[MODE_DECOY_F], step, belief.seed, sample_index)
-            r = noisy_reward(float(reward[MODE_DECOY_F]), step, belief.seed, sample_index, 0.92)
-            out.append(DreamStep(reward_static_frame(step, belief.seed), r, c, float(value[MODE_DECOY_F]), mode))
-        elif mode == MODE_DECOY_B:
-            r = noisy_reward(float(reward[MODE_DECOY_B]) - 0.2 * step, step, belief.seed, sample_index, 0.85)
-            out.append(DreamStep(collapse_frame(step, belief.seed), r, float(cont[MODE_DECOY_B]), float(value[MODE_DECOY_B]), mode))
-        elif mode == MODE_MEAN:
-            out.append(DreamStep(mean_frame(step), 0.64, 0.91, 0.48, mode))
-        else:
-            out.append(DreamStep(normal_frame(step), float(reward[MODE_NORMAL]), float(cont[MODE_NORMAL]), float(value[MODE_NORMAL]), mode))
+        mode_tensor = torch.tensor([MODE_TO_ID[mode]], dtype=torch.long)
+        action_tensor = torch.tensor([int(action)], dtype=torch.long)
+        with torch.no_grad():
+            latent = modules["rssm"](latent.reshape(1, -1), action_tensor, mode_tensor).squeeze(0)
+            frame = decode_latent_frame(model, belief, latent, action == 5, step)
+            reward = float(modules["reward"](latent.reshape(1, -1))[0].item())
+            cont = float(modules["continue"](latent.reshape(1, -1))[0].item())
+            value = float(modules["value"](latent.reshape(1, -1))[0].item())
+        out.append(DreamStep(frame, reward, cont, value, mode))
     return out
 
 

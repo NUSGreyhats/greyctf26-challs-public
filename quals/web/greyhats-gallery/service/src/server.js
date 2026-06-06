@@ -115,17 +115,6 @@ function resolvePhotoPath(relativePath) {
   return filePath;
 }
 
-async function readHeader(filePath) {
-  const file = await fsp.open(filePath, "r");
-  try {
-    const header = Buffer.alloc(16);
-    const result = await file.read(header, 0, header.length, 0);
-    return header.subarray(0, result.bytesRead);
-  } finally {
-    await file.close();
-  }
-}
-
 async function extractPhotosFromZip(zipPath) {
   const before = new Set((await listPhotos()).map((photo) => photo.relativePath));
   await execFileAsync("unzip", ["-o", zipPath, "-d", PHOTO_DIR], {
@@ -256,14 +245,15 @@ app.get("/photos/*", async (req, res, next) => {
       return;
     }
 
-    const contentType = imageContentType(await readHeader(filePath));
+    const contents = await fsp.readFile(filePath);
+    const contentType = imageContentType(contents.subarray(0, 16));
     if (!contentType) {
       res.sendStatus(415);
       return;
     }
 
     res.type(contentType);
-    res.sendFile(filePath);
+    res.send(contents);
   } catch (error) {
     if (error.code === "ENOENT" || error.code === "EISDIR") {
       res.sendStatus(404);

@@ -9,7 +9,12 @@ COPY dist/requirements.txt .
 RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
 COPY dist/ .
 
-ENV FLAG=CTF{set_FLAG_env_on_the_remote_service}
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+ENV OPENBLAS_NUM_THREADS=1
+ENV NUMEXPR_NUM_THREADS=1
+
+ENV FLAG=grey{w40w_Y0u_h4Z_a_L0t_oF_Fr3n5_inDeEd_:0}
 EXPOSE 38267
 
-CMD ["sh", "-c", "exec socat TCP-LISTEN:38267,reuseaddr,fork EXEC:'python3 /app/server.py',stderr"]
+CMD ["sh", "-c", "exec socat -t 20 TCP-LISTEN:38267,reuseaddr,fork EXEC:'python3 /app/server.py',stderr"]

@@ -11,5 +11,15 @@ services:
       PASSWORD_MAC_KEY: ${PASSWORD_MAC_KEY:-mac_key}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password}
-      FLAG: ${FLAG:-local-test-uuid-1234}
-    restart: unless-stopped
+      FLAG: "${FLAG:-grey{local_test_flag}}"
+    mem_limit: 96m
+    cpus: 0.2
+    init: true
+    cap_drop:
+      - NET_RAW
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

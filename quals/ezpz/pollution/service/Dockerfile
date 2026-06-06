@@ -19,12 +19,9 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY --from=app /app /app
-COPY flag.txt /flag-seed.txt
 COPY install-flag.sh /usr/local/bin/install-flag.sh
 RUN chown root:root / \
   && chmod go-w / \
-  && chown root:root /flag-seed.txt \
-  && chmod 400 /flag-seed.txt \
   && chmod 755 /usr/local/bin/install-flag.sh \
   && mkdir -p public/images/profileImages uploads \
   && useradd --no-create-home --home-dir /nonexistent --shell /usr/sbin/nologin appuser \

@@ -90,9 +90,10 @@ Generate the player bundle image from the challenge root:
 ./build-image.py
 ```
 
-The script builds from a temporary copy of `service/`, replacing only `flag.txt`
-with `grey{fake_flag}`. It then exports/imports the built filesystem into a
-squashed `greyhats_gallery:latest` image before saving it to
+The script builds from a temporary copy of `service/`. No flag is baked into the
+image — the full flag is supplied at runtime via the `FLAG` environment variable
+(see the dist `docker-compose.yml`). It then exports/imports the built filesystem
+into a squashed `greyhats_gallery:latest` image before saving it to
 `dist/greyhats_gallery_image.tar.gz`. The squash step intentionally strips Docker
 build history, so the player bundle does not reveal build commands or patch helper
 filenames; the only patch artifact in the player image should be the patched runtime

@@ -4,4 +4,17 @@ services:
     build: ./service
     ports:
       - 36167:5000
+    environment:
+      MAX_CLIENTS: "160"
+      JOB_QUEUE_SIZE: "20"
+      MAX_TROUPE_EXECUTIONS: "2"
+      QUEUE_RESULT_TIMEOUT: "120"
+      TROUPE_SLOT_WAIT_SECONDS: "5"
+      TROUPE_TIMEOUT: "12"
+      SESSION_TIMEOUT: "35"
+      LISTEN_BACKLOG: "512"
+    pids_limit: 2048
+    cpus: 3
+    mem_limit: 2g
+    init: true
     privileged: true

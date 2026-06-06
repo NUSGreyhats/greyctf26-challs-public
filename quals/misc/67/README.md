@@ -13,6 +13,8 @@ Read the Whale section below if the challenge needs per-team/per-user instances.
 
 Can you 67 on a merry christmas?
 
+https://six-seven.chal.zip/
+
 # Author
 jloh02
 
@@ -69,6 +71,9 @@ Set `CLIENT_SIM=false` on the backend to restore the older server-authoritative 
 | `VERIFY_SCORE_THRESHOLD`         | `50`                                              | Minimum claimed score before server replay                                             |
 | `SNAPSHOT_CHALLENGES`            | `true`                                            | Require randomized live camera snapshots for verified runs                             |
 | `SNAPSHOT_MIN_REQUIRED`          | `10`                                              | Minimum completed snapshot challenges for a verified high-score run                    |
+| `SNAPSHOT_MAX_MISSING_HAND_RATIO` | `0.1`                                             | Fraction of snapshot responses allowed without two tracked hands                       |
+| `SNAPSHOT_MAX_MISSING_HANDS`     | unset                                             | Optional absolute override for missing-hand snapshot responses                         |
+| `SNAPSHOT_HAND_GRACE_MS`         | `420`                                             | Accept nearby hand telemetry when a snapshot response briefly loses tracking         |
 | `SNAPSHOT_DEADLINE_MS`           | `1200`                                            | Response deadline for each live snapshot challenge                                     |
 | `SNAPSHOT_LANDMARK_MODE`         | `required`                                        | `off`, `optional`, or `required` server-side image landmark matching                   |
 | `HAND_LANDMARK_SERVICE_URL`      | `http://hand-landmarks:8790/landmarks` in Compose | HTTP endpoint that extracts hand landmarks from snapshot images                        |

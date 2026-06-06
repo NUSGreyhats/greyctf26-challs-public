@@ -4,6 +4,24 @@ services:
       context: .
       dockerfile: Dockerfile
     image: red_flag:latest
+    # Build-only: CTFd-Whale runs the real container in production. This compose
+    # exists so `docker compose build`/`up` produces the image; the entrypoint is
+    # overridden to exit immediately so the container does not stay alive and
+    # consume memory.
+    entrypoint: ["/bin/true"]
+    command: []
     ports:
       - "34367:8080"
-    restart: unless-stopped
+    environment:
+      FLAG: "${FLAG:-grey{fake_flag}}"
+    mem_limit: 128m
+    cpus: 0.2
+    init: true
+    cap_drop:
+      - NET_RAW
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

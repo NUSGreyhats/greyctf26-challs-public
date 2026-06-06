@@ -4,6 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     image: pollution:latest
+    # Build-only: CTFd-Whale runs the real container in production. This compose
+    # exists so `docker compose build`/`up` produces the image; the entrypoint is
+    # overridden to exit immediately so the container does not stay alive and
+    # consume memory.
+    entrypoint: ["/bin/true"]
+    command: []
     ports:
       - "31467:3000"
     environment:
@@ -11,5 +17,15 @@ services:
       PASSWORD_MAC_KEY: some_sucure_mac_key_probably_to_use_for_password_should_be_ok_rite?
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: admin_secret_password
-      FLAG: ${FLAG:-local-test-uuid-1234}
-    restart: unless-stopped
+      FLAG: "${FLAG:-grey{local_test_flag}}"
+    mem_limit: 96m
+    cpus: 0.2
+    init: true
+    cap_drop:
+      - NET_RAW
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

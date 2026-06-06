@@ -68,3 +68,14 @@ def test_seeded_dummy_file_downloads_with_valid_token():
 
     assert download_response.status_code == 200
     assert download_response.content == b"test\n"
+
+
+def test_memdump_download_redirects_to_r2_without_streaming():
+    download_response = client.get(
+        f"/api/vault?download=mem_dump.dmp&token={TEST_TOKEN}",
+        follow_redirects=False,
+    )
+
+    assert download_response.status_code == 301
+    assert download_response.headers["location"] == main.R2_TRUSTED_LINK
+    assert download_response.content == b""

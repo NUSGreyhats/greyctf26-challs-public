@@ -14,6 +14,7 @@ _a collection of BEGINNER-FRIENDLY challenges_
 | ----- | ---- | ----------------- | -------------------------- | ----------- |
 | yes | AE-no-S | Removing SubBytes from AES makes it an affine system over GF(2). | 1 | NA |
 | yes | BabyRSA | Coppersmith RSA solved with sage small_roots | 1 | NA |
+| yes | Fort Knockies | Local password manager forensics | 2 | NA |
 | yes | babyheap | free libc pointer, overwrite function ptr and profit | 1 | 31367 |
 | yes | pollution | Prototype pollution in JS leading to RCE | 1 | 31467 |
 | yes | Codex Computer Use | Agent trace of Codex using computer use leaks the flag through the screenshots taken by codex | 1 | NA |
@@ -32,9 +33,11 @@ _a collection of BEGINNER-FRIENDLY challenges_
 
 | Done? | Name | Challenge Details | Estimated Difficulty (1-5) | Port Number |
 | ----- | ---- | ----------------- | -------------------------- | ----------- |
+| yes | lights-out | Minecraft block extraction + solve GF(2) linear system | 2 | NA |
 | yes | 3d-maze | Build valid RC4 bytecode on stack VM using maze moves | 4.5 | NA |
 | yes | spidr | Control Flow Obfuscation, requires IDA scripting | 3 | NA |
 | yes | ghidra-ganster-edition | Windows-only Ghidra decompiler challenge | 3 | NA |
+| yes | gopher-adventure | go wasm game created with ebitengine | 32 | 33167 |
 
 ### web
 
@@ -51,8 +54,8 @@ _a collection of BEGINNER-FRIENDLY challenges_
 | Done? | Name | Challenge Details | Estimated Difficulty (1-5) | Port Number |
 | ----- | ---- | ----------------- | -------------------------- | ----------- |
 | yes | Chiaroscuro | FFT an audio file, phase shift using a binary phase shift key to encode flag, solve the chunk size and message len, finally decode the flag from the first chunk of audio. | 3 | NA |
-| yes | Fort Knockies | Local password manager forensics | 2 | NA |
-| yes | Grey Yuumi | League replay + USB mouse capture forensics | 3 | NA |
+| yes | Crimewatch | Android emulator image forensics | 2 | NA |
+| yes | Grey Yuumi | League replay + USB mouse capture forensics | 2 | NA |
 
 ### misc
 
@@ -60,6 +63,7 @@ _a collection of BEGINNER-FRIENDLY challenges_
 | ----- | ---- | ----------------- | -------------------------- | ----------- |
 | yes | An old soviet terminal | Bypass information flow control through declassification abuse. Difficulty comes from obscure programming language. | 3 | 36167 |
 | yes | Wait a minute | Exploit an evil regex to achieve ReDoS (CPU-limited via redpwn.jail) | 2 | 36267 |
+| yes | Training Shooting Flags | ECP5 bitstream rev | 3 | NA |
 
 ### crapto (?)
 

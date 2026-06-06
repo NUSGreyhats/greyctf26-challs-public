@@ -4,6 +4,31 @@ services:
       context: .
       dockerfile: Dockerfile
     image: greyhats_gallery:latest
+    # Build-only: CTFd-Whale runs the real container in production. This compose
+    # exists so `docker compose build`/`up` produces the image; the entrypoint is
+    # overridden to exit immediately so the container does not stay alive and
+    # consume memory.
+    entrypoint: ["/bin/true"]
+    command: []
     ports:
       - "34267:3000"
-    restart: unless-stopped
+    environment:
+      FLAG: "${FLAG:-grey{fake_flag}}"
+    mem_limit: 128m
+    cpus: 0.2
+    cap_drop:
+      - NET_RAW
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Mirror the production CTFd-Whale deployment, which creates challenge
+    # services with a Docker init process (the fork's docker_enable_init default
+    # is true). With init on, PID 1 is a root-owned docker-init and the Node
+    # process is a non-deterministic child PID, so /proc/1/fd is unreachable by
+    # appuser. The procfd exploit therefore has to find Node's real PID; solve.py
+    # does this automatically. Keeping init here makes local solves reproduce the
+    # remote environment instead of silently passing against a Node-as-PID-1 box.
+    init: true

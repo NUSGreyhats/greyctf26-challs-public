@@ -7,17 +7,38 @@ A Troupe IFC challenge where players must leak a classified document.
 
 import subprocess
 import tempfile
+import fcntl
 import os
 import sys
 import signal
 import re
+import time
+import json
+import shutil
 from datetime import date
 
 # ─── Configuration ───────────────────────────────────────────────────────────
 
-TIMEOUT = 10
+TIMEOUT = int(os.environ.get("TROUPE_TIMEOUT", "10"))
+SESSION_TIMEOUT = int(os.environ.get("SESSION_TIMEOUT", "45"))
+PROCESS_SHUTDOWN_TIMEOUT = 1
 MAX_CODE_LENGTH = 600
 TERMINAL_TRP = "./terminal.trp"
+MAX_TROUPE_EXECUTIONS = int(os.environ.get("MAX_TROUPE_EXECUTIONS", "4"))
+TROUPE_SLOT_WAIT_SECONDS = int(os.environ.get("TROUPE_SLOT_WAIT_SECONDS", "30"))
+TROUPE_SLOT_DIR = os.environ.get("TROUPE_SLOT_DIR", "/tmp/soviet-terminal-slots")
+TROUPE_RUN_STATE_DIR = os.environ.get("TROUPE_RUN_STATE_DIR", "/tmp/soviet-terminal-runs")
+TROUPE_MKID = os.environ.get("TROUPE_MKID", "/Troupe/rt/built/p2p/mkid.js")
+TROUPE_IDENTITY_NAMES = ("receiver", "transmitter")
+TROUPE_TRUST_LEVEL = "{topsecret}"
+
+
+class ServerBusyError(Exception):
+    pass
+
+
+class RuntimeSetupError(Exception):
+    pass
 
 # ─── Banner ──────────────────────────────────────────────────────────────────
 
@@ -234,6 +255,7 @@ def service_transmission():
 
     # Display results
     format_output(stdout, stderr, returncode)
+    print("\n[SYSTEM] Transmission channel closed. Reconnect to submit another program.")
 
 
 # ─── Input Handling ──────────────────────────────────────────────────────────
@@ -255,28 +277,16 @@ def read_player_code():
 
 # ─── Input Validation ────────────────────────────────────────────────────────
 
-def validate_player_code(code):
+def validate_player_code_error(code):
     """
     Basic validation of player code.
     The IFC system is the real security boundary, not this filter.
     """
     if not code.strip():
-        print()
-        print("╔══════════════════════════════════════════════════════════════╗")
-        print("║                                                              ║")
-        print("║  [SYSTEM] No program submitted.                              ║")
-        print("║                                                              ║")
-        print("╚══════════════════════════════════════════════════════════════╝")
-        return False
-    
+        return "No program submitted."
+
     if len(code) > MAX_CODE_LENGTH:
-        print()
-        print("╔══════════════════════════════════════════════════════════════╗")
-        print("║                                                              ║")
-        print(f"║  [SYSTEM] Program exceeds maximum allocation ({MAX_CODE_LENGTH} bytes).    ║")
-        print("║                                                              ║")
-        print("╚══════════════════════════════════════════════════════════════╝")
-        return False
+        return f"Program exceeds maximum allocation ({MAX_CODE_LENGTH} bytes)."
 
     # Block obvious sandbox escapes
     blocked_patterns = [
@@ -288,16 +298,42 @@ def validate_player_code(code):
 
     for pattern in blocked_patterns:
         if re.search(pattern, code, re.IGNORECASE):
-            print()
-            print("╔══════════════════════════════════════════════════════════════╗")
-            print("║                                                              ║")
-            print(f"║  [SYSTEM] Restricted operation detected.                     ║")
-            print("║                                                              ║")
-            print("╚══════════════════════════════════════════════════════════════╝")
-            
-            return False
+            return "Restricted operation detected."
 
-    return True
+    return None
+
+
+def validate_player_code(code):
+    error = validate_player_code_error(code)
+    if error is None:
+        return True
+
+    if error == "No program submitted.":
+        print()
+        print("╔══════════════════════════════════════════════════════════════╗")
+        print("║                                                              ║")
+        print("║  [SYSTEM] No program submitted.                              ║")
+        print("║                                                              ║")
+        print("╚══════════════════════════════════════════════════════════════╝")
+        return False
+
+    if error.startswith("Program exceeds maximum allocation"):
+        print()
+        print("╔══════════════════════════════════════════════════════════════╗")
+        print("║                                                              ║")
+        print(f"║  [SYSTEM] Program exceeds maximum allocation ({MAX_CODE_LENGTH} bytes).    ║")
+        print("║                                                              ║")
+        print("╚══════════════════════════════════════════════════════════════╝")
+        return False
+
+    print()
+    print("╔══════════════════════════════════════════════════════════════╗")
+    print("║                                                              ║")
+    print(f"║  [SYSTEM] Restricted operation detected.                     ║")
+    print("║                                                              ║")
+    print("╚══════════════════════════════════════════════════════════════╝")
+
+    return False
 
 
 # ─── Program Assembly ────────────────────────────────────────────────────────
@@ -328,83 +364,272 @@ def build_program(player_code):
 
 # ─── Execution ───────────────────────────────────────────────────────────────
 
+def stop_process_group(proc):
+    """Terminate a subprocess and any children it started."""
+    if proc is None or proc.poll() is not None:
+        return
+
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.killpg(proc.pid, sig)
+        except ProcessLookupError:
+            return
+
+        try:
+            proc.wait(timeout=PROCESS_SHUTDOWN_TIMEOUT)
+            return
+        except subprocess.TimeoutExpired:
+            continue
+
+
+def acquire_troupe_slot():
+    """Acquire one cross-process slot for the expensive Troupe runtime."""
+    os.makedirs(TROUPE_SLOT_DIR, exist_ok=True)
+    deadline = time.monotonic() + TROUPE_SLOT_WAIT_SECONDS
+
+    while True:
+        for idx in range(MAX_TROUPE_EXECUTIONS):
+            path = os.path.join(TROUPE_SLOT_DIR, f"slot-{idx}.lock")
+            fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                return fd
+            except BlockingIOError:
+                os.close(fd)
+
+        if time.monotonic() >= deadline:
+            raise ServerBusyError
+
+        time.sleep(0.2)
+
+
+
+def release_troupe_slot(fd):
+    try:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+    finally:
+        os.close(fd)
+
+
+def write_json(path, value):
+    with open(path, "w") as f:
+        json.dump(value, f, separators=(",", ":"))
+
+
+def generate_troupe_id(outfile, env):
+    result = subprocess.run(
+        ["node", TROUPE_MKID, f"--outfile={outfile}"],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=PROCESS_SHUTDOWN_TIMEOUT * 5,
+        env=env,
+    )
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or "").strip()
+        raise RuntimeSetupError(f"identity generation failed: {detail}")
+
+    try:
+        with open(outfile, "r") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        raise RuntimeSetupError(f"identity generation produced invalid output: {e}")
+
+
+def create_runtime_state():
+    """
+    Create isolated runtime inputs for one challenge execution.
+
+    Troupe's network peer ID is the real node identity. Reusing the same
+    receiver/transmitter IDs across concurrent runs causes the libp2p network
+    and alias lookup to cross streams, so each run gets fresh IDs and matching
+    aliases/trustmaps.
+    """
+    os.makedirs(TROUPE_RUN_STATE_DIR, exist_ok=True)
+    run_dir = tempfile.mkdtemp(prefix="run_", dir=TROUPE_RUN_STATE_DIR)
+    ids_dir = os.path.join(run_dir, "ids")
+    out_dir = os.path.join(run_dir, "out")
+    trustmaps_dir = os.path.join(run_dir, "trustmaps")
+    aliases_file = os.path.join(run_dir, "aliases.json")
+    trustmap_file = os.path.join(trustmaps_dir, "servers.json")
+
+    try:
+        os.makedirs(ids_dir)
+        os.makedirs(out_dir)
+        os.makedirs(trustmaps_dir)
+
+        env = os.environ.copy()
+        env.update(
+            {
+                "TROUPE_HOME": run_dir,
+                "TROUPE_OUT_DIR": out_dir,
+                "TROUPE_IDS_DIR": ids_dir,
+                "TROUPE_ALIASES_FILE": aliases_file,
+                "TROUPE_TRUSTMAP_FILE": trustmap_file,
+            }
+        )
+
+        identities = {}
+        for name in TROUPE_IDENTITY_NAMES:
+            identities[name] = generate_troupe_id(
+                os.path.join(ids_dir, f"{name}.json"),
+                env,
+            )
+            shutil.copy2(
+                os.path.join("out", f"{name}.js"),
+                os.path.join(out_dir, f"{name}.js"),
+            )
+
+        write_json(aliases_file, {"receiver": identities["receiver"]["id"]})
+        write_json(
+            trustmap_file,
+            [
+                {"id": identities[name]["id"], "level": TROUPE_TRUST_LEVEL}
+                for name in TROUPE_IDENTITY_NAMES
+            ],
+        )
+
+        return {
+            "run_dir": run_dir,
+            "env": env,
+        }
+
+    except Exception:
+        shutil.rmtree(run_dir, ignore_errors=True)
+        raise
+
+
 def run_troupe(program):
     """Execute the assembled Troupe program in a subprocess."""
     if program is None:
         return "", "Build failed", 1
 
-    with tempfile.NamedTemporaryFile(
-        mode='w',
-        suffix='.trp',
-        delete=False,
-        dir='/tmp',
-        prefix='terminal_'
-    ) as f:
-        f.write(program)
-        tmp_path = f.name
-
+    slot_fd = None
+    tmp_path = None
+    runtime_state = None
+    receiver = None
+    terminal = None
     try:
-        error = subprocess.Popen(
+        slot_fd = acquire_troupe_slot()
+        runtime_state = create_runtime_state()
+
+        with tempfile.NamedTemporaryFile(
+            mode='w',
+            suffix='.trp',
+            delete=False,
+            dir=runtime_state["run_dir"],
+            prefix='terminal_'
+        ) as f:
+            f.write(program)
+            tmp_path = f.name
+
+        receiver = subprocess.Popen(
             ["bash", "rtrp.sh", "receiver.trp", "transmitter.trp"],
             text=True,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+            env=runtime_state["env"],
         )
 
-        result = subprocess.run(
+        terminal = subprocess.Popen(
             ["bash", "crtrp.sh", tmp_path],
-            capture_output=True,
             text=True,
-            timeout=TIMEOUT
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+            env=runtime_state["env"],
         )
-        error.wait()
-        return result.stdout, result.stderr + " " + " ".join(error.stdout.readlines()), result.returncode
+
+        stdout, stderr = terminal.communicate(timeout=TIMEOUT)
+
+        try:
+            receiver_stdout, receiver_stderr = receiver.communicate(
+                timeout=PROCESS_SHUTDOWN_TIMEOUT
+            )
+        except subprocess.TimeoutExpired:
+            stop_process_group(receiver)
+            receiver_stdout, receiver_stderr = receiver.communicate()
+
+        combined_stderr = " ".join(
+            part for part in (stderr, receiver_stdout, receiver_stderr) if part
+        )
+        return stdout, combined_stderr, terminal.returncode
 
     except subprocess.TimeoutExpired:
+        stop_process_group(terminal)
+        stop_process_group(receiver)
         return "", "Timeout", -1
 
+    except ServerBusyError:
+        return "", "Server busy, retry shortly", -2
+
+    except RuntimeSetupError:
+        stop_process_group(terminal)
+        stop_process_group(receiver)
+        return "", "Runtime setup failed", 1
+
     except FileNotFoundError as e:
+        stop_process_group(terminal)
+        stop_process_group(receiver)
         print(e)
         print("[SYSTEM ERROR] Connection failed. Contact administrator.")
         return "", "Runtime missing", 1
 
     finally:
-        try:
-            os.unlink(tmp_path)
-            pass
-        except OSError:
-            pass
+        stop_process_group(terminal)
+        stop_process_group(receiver)
+        if slot_fd is not None:
+            release_troupe_slot(slot_fd)
+        if tmp_path is not None:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+        if runtime_state is not None:
+            shutil.rmtree(runtime_state["run_dir"], ignore_errors=True)
 
 
 # ─── Output Formatting ───────────────────────────────────────────────────────
 
-def format_output(stdout, stderr, returncode):
+def format_output_text(stdout, stderr, returncode):
     """Format Troupe execution results for the player."""
-    print()
-    print("╔══════════════════════════════════════════════════════════════╗")
-    print("║                       TELETYPE OUTPUT                        ║")
-    print("╠══════════════════════════════════════════════════════════════╣")
+    lines = []
+    emit = lines.append
+
+    emit("")
+    emit("╔══════════════════════════════════════════════════════════════╗")
+    emit("║                       TELETYPE OUTPUT                        ║")
+    emit("╠══════════════════════════════════════════════════════════════╣")
 
     if returncode == -1:
-        print("║                                                              ║")
-        print("║  [TIMEOUT] Program exceeded time allocation.                 ║")
-        print("║  Session terminated after {:2d} seconds.                         ║".format(TIMEOUT))
-        print("║                                                              ║")
+        emit("║                                                              ║")
+        emit("║  [TIMEOUT] Program exceeded execution time limit.            ║")
+        emit("║  Your submission started running but did not finish in time. ║")
+        emit("║  Try reducing waits, loops, or repeated service calls.       ║")
+        emit("║  Execution limit: {:2d} seconds.                              ║".format(TIMEOUT))
+        emit("║                                                              ║")
+
+    elif returncode == -2:
+        emit("║                                                              ║")
+        emit("║  [BUSY] Transmission systems are at capacity.                ║")
+        emit("║  The terminal is under heavy load. Please retry shortly.     ║")
+        emit("║                                                              ║")
 
     elif returncode != 0:
-        print("║                                                              ║")
-        print("║  [ERROR] Program terminated abnormally.                      ║")
-        print("║                                                              ║")
+        emit("║                                                              ║")
+        emit("║  [ERROR] Program terminated abnormally.                      ║")
+        emit("║                                                              ║")
         if stderr:
             ifc_messages = extract_error_messages(stderr)
             if ifc_messages:
-                print("║  Security alerts:                                            ║")
+                emit("║  Security alerts:                                            ║")
                 for msg in ifc_messages[:10]:
                     while len(msg) > 56:
-                        print(f"║    {msg[:54]} —  ║")
+                        emit(f"║    {msg[:54]} —  ║")
                         msg = msg[54:]
-                    print(f"║    {msg:<56s}  ║")
-                print("║                                                              ║")
+                    emit(f"║    {msg:<56s}  ║")
+                emit("║                                                              ║")
 
     else:
         output_lines = []
@@ -412,35 +637,40 @@ def format_output(stdout, stderr, returncode):
             output_lines = stdout.strip().split('\n')
             output_lines = list(filter(lambda l: "*" not in l and "()@{}%{}" not in l, output_lines))
         if output_lines:
-            print("║                                                              ║")
+            emit("║                                                              ║")
             for line in output_lines[:50]:
                 while len(line) > 58:
-                    print(f"║  {line[:56]} —  ║")
+                    emit(f"║  {line[:56]} —  ║")
                     line = line[56:]
-                print(f"║  {line:<58s}  ║")
-            print("║                                                              ║")
+                emit(f"║  {line:<58s}  ║")
+            emit("║                                                              ║")
         else:
-            print("║                                                              ║")
-            print("║  [ERROR] Program terminated abnormally.                      ║")
-            print("║                                                              ║")
+            emit("║                                                              ║")
+            emit("║  [ERROR] Program terminated abnormally.                      ║")
+            emit("║                                                              ║")
             if stderr:
                 ifc_messages = extract_error_messages(stderr)
                 if ifc_messages:
-                    print("║  Security alerts:                                            ║")
+                    emit("║  Security alerts:                                            ║")
                     for msg in ifc_messages[:10]:
                         while len(msg) > 56:
-                            print(f"║    {msg[:54]} —  ║")
+                            emit(f"║    {msg[:54]} —  ║")
                             msg = msg[54:]
-                        print(f"║    {msg:<56s}  ║")
-                    print("║                                                              ║")
+                        emit(f"║    {msg:<56s}  ║")
+                    emit("║                                                              ║")
             else:
-                print("║                                                              ║")
-                print("║  [NO OUTPUT]                                                 ║")
-                print("║  Teletype produced no public output.                         ║")
-                print("║  [Connection Lost] Please re-establish connection.           ║")
-                print("║                                                              ║")
+                emit("║                                                              ║")
+                emit("║  [NO OUTPUT]                                                 ║")
+                emit("║  Teletype produced no public output.                         ║")
+                emit("║  [Connection Lost] Please re-establish connection.           ║")
+                emit("║                                                              ║")
 
-    print("╚══════════════════════════════════════════════════════════════╝")
+    emit("╚══════════════════════════════════════════════════════════════╝")
+    return "\n".join(lines) + "\n"
+
+
+def format_output(stdout, stderr, returncode):
+    print(format_output_text(stdout, stderr, returncode), end="")
 
 
 def extract_error_messages(stderr):
@@ -468,7 +698,7 @@ def timeout_handler(signum, frame):
 def main():
     # Overall session timeout
     signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(120)  # 2 minute total session
+    signal.alarm(SESSION_TIMEOUT)
 
     print(BANNER)
 
@@ -489,6 +719,7 @@ def main():
             service_index_clerk()
         elif choice == "4":
             service_transmission()
+            break
         elif choice == "5":
             service_maintenance_log()
         elif choice == "6":

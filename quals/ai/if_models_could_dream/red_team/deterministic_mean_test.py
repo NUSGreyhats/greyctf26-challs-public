@@ -18,7 +18,7 @@ def main() -> int:
     model = load_model()
     digest = re.search(r'EXPECTED_SHA256 = "([0-9a-f]{64})"', (ROOT / "dist" / "verify.py").read_text()).group(1)
     belief, _, _, _ = observe_prefix(2026, good_prefix(2026))
-    steps = rollout_steps(model, belief, suffix(int(model["rssm"]["horizon"])), deterministic=True)
+    steps = rollout_steps(model, belief, suffix(int(model["rssm"]["rollout_steps"])), deterministic=True)
     candidate = decode_candidate(steps)
     if hashlib.sha256(candidate.encode()).hexdigest() == digest:
         raise SystemExit("deterministic mean exposed the payload")

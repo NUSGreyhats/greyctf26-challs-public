@@ -16,8 +16,8 @@ rl_updates: 160
 rl_env_count: 24
 rl_rollout_len: 32
 rl_recent_success_rate: 0.920
-world_optimizer_steps: 1800
-world_final_loss: 0.069253
+world_optimizer_steps: 12000
+world_final_loss: 0.012307
 train_success_rate: 0.940
 held_out_success_rate: 0.980
 max_real_task_reward: 0.891053

@@ -8,9 +8,11 @@ const HOST = "127.0.0.1";
 async function main() {
   const port = await freePort();
   const landmarkService = await startLandmarkService();
+  const servers = [];
   const server = await startBackend(port, {
     landmarkServiceUrl: landmarkService.url,
   });
+  servers.push(server);
 
   try {
     await runCase("missing snapshot response", port, {
@@ -26,9 +28,35 @@ async function main() {
       snapshotImage: (index) => fakeJpegDataUrl(index),
       expectedReason: "Hand tracking dropped out too much",
     });
+
+    const lenientPort = await freePort();
+    const lenientServer = await startBackend(lenientPort, {
+      landmarkServiceUrl: landmarkService.url,
+      env: {
+        SNAPSHOT_MIN_REQUIRED: "10",
+        SNAPSHOT_START_DELAY_MS: "10",
+        SNAPSHOT_MIN_INTERVAL_MS: "10",
+        SNAPSHOT_MAX_INTERVAL_MS: "15",
+        SNAPSHOT_MAX_MISSING_HAND_RATIO: "0.1",
+      },
+    });
+    servers.push(lenientServer);
+    await runCase("one missing-hand snapshot is tolerated", lenientPort, {
+      respondToChallenges: true,
+      finishAfterChallenges: 10,
+      finishDelayMs: 0,
+      snapshotImage: (index) => fakeJpegDataUrl(index),
+      snapshotFields: (index) =>
+        index === 1
+          ? { leftY: null, rightY: null, handCount: 0 }
+          : {},
+      expectedReason: "Hand tracking dropped out too much",
+    });
     console.log("snapshot challenge tests passed");
   } finally {
-    server.kill("SIGTERM");
+    for (const child of servers) {
+      child.kill("SIGTERM");
+    }
     landmarkService.close();
   }
 }
@@ -77,7 +105,7 @@ async function startLandmarkService() {
   };
 }
 
-async function startBackend(port, { landmarkServiceUrl } = {}) {
+async function startBackend(port, { landmarkServiceUrl, env = {} } = {}) {
   const child = spawn(process.execPath, ["backend/server.js"], {
     cwd: process.cwd(),
     env: {
@@ -95,6 +123,7 @@ async function startBackend(port, { landmarkServiceUrl } = {}) {
       VIDEO_VERIFY_MODE: "off",
       VERIFY_SCORE_THRESHOLD: "50",
       CLIENT_SIM: "true",
+      ...env,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -111,7 +140,18 @@ async function startBackend(port, { landmarkServiceUrl } = {}) {
   return child;
 }
 
-async function runCase(name, port, { respondToChallenges, snapshotImage = () => "", expectedReason }) {
+async function runCase(
+  name,
+  port,
+  {
+    respondToChallenges,
+    snapshotImage = () => "",
+    snapshotFields = () => ({}),
+    finishAfterChallenges = 2,
+    finishDelayMs = respondToChallenges ? 50 : 300,
+    expectedReason,
+  },
+) {
   const socket = new WebSocket(`ws://${HOST}:${port}/ws`);
   const startedAt = Date.now();
   let challengeCount = 0;
@@ -140,15 +180,16 @@ async function runCase(name, port, { respondToChallenges, snapshotImage = () => 
               leftY: 0.5,
               rightY: 0.5,
               handCount: 2,
+              ...snapshotFields(challengeCount),
               clientTime: Date.now(),
               traceAtMs: Date.now() - startedAt,
             }),
           );
         }
-        if (challengeCount >= 2) {
+        if (challengeCount >= finishAfterChallenges) {
           setTimeout(() => {
             socket.send(JSON.stringify({ type: "finish", score: 67, clientTime: Date.now() }));
-          }, respondToChallenges ? 50 : 300);
+          }, finishDelayMs);
         }
       }
     });

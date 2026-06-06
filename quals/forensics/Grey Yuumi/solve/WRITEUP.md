@@ -7,14 +7,29 @@
 
 The handout contains a League replay (`.rofl`) and a USB capture (`.pcapng`).
 
-The replay is not the flag by itself. It is there to give the important game timing: find when the relevant player dies, then use that timestamp to isolate the matching portion of the USB mouse capture.
+The replay gives the important game timings: note the death timers, then use those timestamps to isolate matching portions of the USB mouse capture.
 
 ## Intended Path
 
-1. Inspect the `.rofl` replay and determine the death time for the relevant player/event.
-2. Map that game timestamp onto the `.pcapng` timeline.
-3. Extract USB HID mouse reports from the capture.
-4. Decode the mouse reports:
+1. Run the solve script from this directory:
+
+```bash
+python3 solve.py
+```
+
+The script extracts `../dist/grey_yuumi.tar.gz`, uses the known death timers from the replay, and renders one PNG for each candidate right-click window into the current working directory.
+
+The PCAP timeline is not assumed to be exactly the same length as the game timeline, so the script maps game time onto PCAP time by duration ratio using the replay duration and renders `±20` seconds around each death timer.
+
+2. The solve uses these death timers:
+
+```text
+5:36, 7:02, 9:40, 12:40, 18:14, 21:21, 23:09, 24:17, 26:09
+```
+
+3. Map each timer onto the PCAP timeline.
+
+4. Extract USB HID mouse reports from the capture. The report format used here is:
 
 ```text
 button = report[0]
@@ -24,18 +39,8 @@ wheel  = signed int8 report[6]
 ```
 
 5. Integrate `dx, dy` to reconstruct the relative cursor path.
-6. Keep the right-click strokes from the window around the death time.
+6. Keep the right-click strokes from the window around each death timer.
 7. Render those strokes to recover the drawn flag.
-
-## Helper
-
-`mouse_trace.py` renders the full right-click trace from the USB capture:
-
-```bash
-python3 mouse_trace.py grey_yuumi.pcapng -o trace.png
-```
-
-For solving, the important extra step is filtering the decoded trace to the replay death-time window before rendering.
 
 ## Flag
 

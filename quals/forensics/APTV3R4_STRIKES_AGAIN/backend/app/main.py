@@ -7,7 +7,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, PlainTextResponse
+from fastapi.responses import FileResponse, PlainTextResponse, RedirectResponse
 
 TOKEN_LENGTH = 67
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -15,6 +15,11 @@ VAULT_DIR = BASE_DIR / "vault_files"
 TOKEN_FILE = BASE_DIR / ".vault_token"
 DUMMY_FILENAME = "test.txt"
 DUMMY_CONTENT = b"test\n"
+MEMDUMP_FILENAME = "mem_dump.dmp"
+R2_TRUSTED_LINK = os.getenv(
+    "MEMDUMP_R2_LINK",
+    "https://2f0eeec84b659c3461a7b6f3eb727d4b.r2.cloudflarestorage.com/greyctf26/b5637bd1997e524a056cd4611cfd7c43/mem_dump.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=e8894ef8d1c88b418ccd644073b4e57b%2F20260528%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260528T161423Z&X-Amz-Expires=259200&X-Amz-SignedHeaders=host&X-Amz-Signature=253ef6700bb2113a80ca0612f53e220102ecf6bbc0986cd7d5060cde3b60719b"
+).strip()
 
 
 def _generate_token() -> str:
@@ -70,7 +75,7 @@ def _deny_bad_token(token: str | None) -> None:
         raise HTTPException(status_code=400, detail="Invalid vault token.")
 
 
-def _download_path(filename: str | None) -> Path:
+def _vault_filename(filename: str | None) -> str:
     if not filename:
         raise HTTPException(status_code=404, detail="File not found.")
 
@@ -79,11 +84,19 @@ def _download_path(filename: str | None) -> Path:
     if filename != windows_name or windows_name in {"", ".", ".."}:
         raise HTTPException(status_code=404, detail="File not found.")
 
-    target = (VAULT_DIR / windows_name).resolve()
+    return windows_name
+
+
+def _download_path(filename: str) -> Path:
+    target = (VAULT_DIR / filename).resolve()
     if target.parent != VAULT_DIR.resolve() or not target.is_file():
         raise HTTPException(status_code=404, detail="File not found.")
 
     return target
+
+
+def _remote_memdump_response() -> RedirectResponse:
+    return RedirectResponse(R2_TRUSTED_LINK, status_code=301)
 
 
 @app.get("/api/health")
@@ -111,7 +124,11 @@ def download_file(
     if upload is not None:
         return PlainTextResponse("upload successful")
 
-    target = _download_path(download)
+    filename = _vault_filename(download)
+    if filename == MEMDUMP_FILENAME:
+        return _remote_memdump_response()
+
+    target = _download_path(filename)
     return FileResponse(
         target,
         media_type="application/octet-stream",

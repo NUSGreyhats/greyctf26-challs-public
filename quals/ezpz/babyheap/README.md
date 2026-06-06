@@ -6,6 +6,9 @@ babyheap
 
 You can't Use After Free if you never free, right?
 
+# Tags
+- pwn
+
 # Author
 elijah5399
 

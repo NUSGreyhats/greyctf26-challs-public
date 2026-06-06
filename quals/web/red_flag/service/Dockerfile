@@ -30,7 +30,6 @@ RUN apk add --no-cache su-exec \
 COPY --from=builder /tmp/crm_final                      /rootfs/crm
 COPY install-flag.sh                                    /rootfs/usr/local/bin/install-flag.sh
 COPY static                                             /rootfs/static
-COPY flag.txt                                           /rootfs/flag-seed.txt
 
 # Layout, ownership, and the kernel-script trap.
 RUN mkdir -p /rootfs/data /rootfs/uploads /rootfs/usr/bin /rootfs/etc /rootfs/sbin \
@@ -40,14 +39,17 @@ RUN mkdir -p /rootfs/data /rootfs/uploads /rootfs/usr/bin /rootfs/etc /rootfs/sb
  && cp /sbin/su-exec /rootfs/sbin/su-exec \
  && chmod 755 /rootfs/crm /rootfs/usr/local/bin/install-flag.sh /rootfs/usr/bin/bash /rootfs/sbin/su-exec \
  && chown 1000:1000 /rootfs/usr/bin/bash /rootfs/data /rootfs/uploads \
- && chown -R 1000:1000 /rootfs/static \
- && chown 0:0 /rootfs/flag-seed.txt \
- && chmod 0400 /rootfs/flag-seed.txt
+ && chown -R 1000:1000 /rootfs/static
 
 # ── Stage 3: minimal runtime — pure COPY layer, zero RUN steps ──────────────
 FROM alpine:3.20
 
 COPY --from=staging /rootfs/ /
+
+# Run in production mode so the unauthenticated /api/debug/* routes
+# (which dump config secrets and the full process environment, including FLAG)
+# are never registered. See config.Debug / main.go.
+ENV APP_ENV=production
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/bin/install-flag.sh"]

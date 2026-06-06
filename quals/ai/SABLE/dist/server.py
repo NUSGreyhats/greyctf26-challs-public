@@ -67,6 +67,8 @@ def risk_for_graph(model, graph: Dict[str, Any]) -> float:
 
 
 def main() -> int:
+    torch.set_num_threads(1)
+    torch.set_num_interop_threads(1)
     parser = argparse.ArgumentParser(description="SABLE checker")
     parser.add_argument("payload", nargs="?", help="JSON payload path; stdin is used when omitted")
     parser.add_argument("--debug", action="store_true", help="include diagnostics")

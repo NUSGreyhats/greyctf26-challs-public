@@ -30,7 +30,7 @@ def main() -> int:
         anchor_frame=np.zeros((56, 56, 3), dtype=np.uint8),
     )
     for sample in range(96):
-        steps = rollout_steps(model, image_only, suffix(int(model["rssm"]["horizon"])), sample_index=sample)
+        steps = rollout_steps(model, image_only, suffix(int(model["rssm"]["rollout_steps"])), sample_index=sample)
         candidate = decode_candidate(steps)
         if hashlib.sha256(candidate.encode()).hexdigest() == digest:
             raise SystemExit("image-only anchor recovered the payload")

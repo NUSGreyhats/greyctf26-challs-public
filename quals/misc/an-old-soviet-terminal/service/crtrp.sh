@@ -5,10 +5,12 @@ set -e
 
 # ─── Configuration ───────────────────────────────────────────────────────────
 
-export TROUPE=/Troupe
-export HOME=/tmp
-OUT_DIR="/tmp"
-IDS_DIR="./ids"
+export TROUPE="${TROUPE:-/Troupe}"
+export HOME="${TROUPE_HOME:-/tmp}"
+OUT_DIR="${TROUPE_OUT_DIR:-/tmp}"
+IDS_DIR="${TROUPE_IDS_DIR:-./ids}"
+ALIASES_FILE="${TROUPE_ALIASES_FILE:-aliases.json}"
+TRUSTMAP_FILE="${TROUPE_TRUSTMAP_FILE:-./trustmaps/servers.json}"
 
 # ─── Argument Check ──────────────────────────────────────────────────────────
 
@@ -51,13 +53,13 @@ for INPUT_FILE in "$@"; do
     if [ ! -f "$IDS_DIR/${BASENAME}.json" ]; then
         node "$TROUPE/rt/built/troupe.js" \
             -f="$OUT_DIR/${BASENAME}.js" \
-            --aliases="aliases.json" &
+            --aliases="$ALIASES_FILE" &
     else
         node "$TROUPE/rt/built/troupe.js" \
             -f="$OUT_DIR/${BASENAME}.js" \
             --id="$IDS_DIR/${BASENAME}.json" \
-            --trustmap="./trustmaps/servers.json" \
-            --aliases="aliases.json" &
+            --trustmap="$TRUSTMAP_FILE" \
+            --aliases="$ALIASES_FILE" &
     fi
 
     PIDS+=($!)

@@ -1,0 +1,5 @@
+services:
+  gopher_web:
+    build: .
+    ports:
+      - "33167:80"

@@ -3,4 +3,16 @@ services:
     image: red_flag:latest
     ports:
       - "34367:8080"
-    restart: unless-stopped
+    environment:
+      FLAG: "${FLAG:-grey{fake_flag}}"
+    mem_limit: 128m
+    cpus: 0.2
+    init: true
+    cap_drop:
+      - NET_RAW
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

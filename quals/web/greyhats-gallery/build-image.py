@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import os
 import shutil
 import subprocess
 import sys
@@ -16,8 +15,6 @@ DIST_IMAGE = DIST_DIR / "greyhats_gallery_image.tar.gz"
 BUILD_TAG = "greyhats_gallery:player-build"
 SQUASHED_TAG = "greyhats_gallery:player-squashed"
 PLAYER_TAG = "greyhats_gallery:latest"
-
-DEFAULT_PLAYER_FLAG = "grey{fake_flag}"
 
 IMAGE_CHANGES = [
     'ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
@@ -45,13 +42,12 @@ def output(args):
         return ""
 
 
-def copy_service_context(destination, player_flag):
+def copy_service_context(destination):
     shutil.copytree(
         SERVICE_DIR,
         destination,
         ignore=shutil.ignore_patterns("node_modules", "uploads", "storage", ".env"),
     )
-    (destination / "flag.txt").write_text(player_flag.rstrip("\n") + "\n", encoding="utf-8")
 
 
 def squash_image(source_tag, target_tag):
@@ -97,12 +93,7 @@ def save_player_image(output_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Build the player dist image with a fake flag and stripped build history."
-    )
-    parser.add_argument(
-        "--player-flag",
-        default=os.environ.get("PLAYER_FLAG", DEFAULT_PLAYER_FLAG),
-        help="fake flag embedded in the player image",
+        description="Build the player dist image without a baked flag and with stripped build history."
     )
     parser.add_argument(
         "--output",
@@ -116,7 +107,7 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="greyhats-gallery-player-") as tmp:
         context = Path(tmp) / "service"
-        copy_service_context(context, args.player_flag)
+        copy_service_context(context)
         run(["docker", "build", "--platform=linux/amd64", "-t", BUILD_TAG, str(context)])
 
     squash_image(BUILD_TAG, SQUASHED_TAG)

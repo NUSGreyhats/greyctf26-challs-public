@@ -965,6 +965,10 @@ function updateInputCounters() {
 }
 
 function handleSnapshotChallenge(message) {
+  if (finishSubmitted) {
+    return;
+  }
+
   snapshotChallengeCount += 1;
   statusText.textContent = `Snapshot challenge ${snapshotChallengeCount}: keep both hands visible.`;
   sendSnapshotResponse(message);

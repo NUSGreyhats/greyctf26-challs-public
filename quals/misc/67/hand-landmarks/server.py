@@ -2,8 +2,10 @@
 import base64
 import json
 import os
+import queue
 import threading
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import concurrent.futures
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from io import BytesIO
 from statistics import median
 from urllib.parse import urlparse
@@ -37,8 +39,10 @@ def create_detector():
     return HandLandmarker.create_from_options(options)
 
 
-DETECTOR = create_detector()
-DETECTOR_LOCK = threading.Lock()
+POOL_SIZE = int(os.environ.get("DETECTOR_POOL_SIZE", "8"))
+DETECTOR_POOL = queue.Queue(maxsize=POOL_SIZE)
+for _ in range(POOL_SIZE):
+    DETECTOR_POOL.put(create_detector())
 
 
 def json_response(handler, status, payload):
@@ -89,8 +93,12 @@ def anchor_from_landmarks(landmarks):
 def extract_landmarks(image_data):
     rgb = read_rgb_image(image_data)
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
-    with DETECTOR_LOCK:
-        result = DETECTOR.detect(mp_image)
+
+    detector = DETECTOR_POOL.get()
+    try:
+        result = detector.detect(mp_image)
+    finally:
+        DETECTOR_POOL.put(detector)
 
     hands = []
     by_side = [None, None]
@@ -145,12 +153,35 @@ class Handler(BaseHTTPRequestHandler):
             response["challengeId"] = request.get("challengeId")
             json_response(self, 200, response)
         except Exception as exc:
+            print(f"Exception: {exc}", flush=True)
             json_response(self, 400, {"ok": False, "error": str(exc)})
 
 
+class ThreadPoolHTTPServer(HTTPServer):
+    def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True, max_workers=32):
+        super().__init__(server_address, RequestHandlerClass, bind_and_activate)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
+
+    def process_request(self, request, client_address):
+        self.executor.submit(self.process_request_thread, request, client_address)
+
+    def process_request_thread(self, request, client_address):
+        try:
+            self.finish_request(request, client_address)
+            self.shutdown_request(request)
+        except Exception:
+            self.handle_error(request, client_address)
+            self.shutdown_request(request)
+
+    def server_close(self):
+        super().server_close()
+        self.executor.shutdown(wait=False)
+
+
 def main():
-    server = ThreadingHTTPServer((HOST, PORT), Handler)
-    print(f"hand landmark service listening on {HOST}:{PORT}", flush=True)
+    max_workers = int(os.environ.get("MAX_WORKERS", "128"))
+    server = ThreadPoolHTTPServer((HOST, PORT), Handler, max_workers=max_workers)
+    print(f"hand landmark service listening on {HOST}:{PORT} with max {max_workers} workers", flush=True)
     server.serve_forever()
 
 

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 import os
+import signal
 import time
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
+
+SESSION_TIMEOUT_SECONDS = int(os.getenv("SESSION_TIMEOUT_SECONDS", "120"))
 
 t = str(int(time.time())).encode()
 k = b"noflagsharing!!!"
@@ -58,7 +61,15 @@ def is_printable(block):
     # Validates if a 16-byte block is fully printable ASCII (32-126)
     return all(32 <= b <= 126 for b in block)
 
+def session_timeout(signum, frame):
+    print("Session timed out.")
+    raise SystemExit(0)
+
 def main():
+    if SESSION_TIMEOUT_SECONDS > 0:
+        signal.signal(signal.SIGALRM, session_timeout)
+        signal.alarm(SESSION_TIMEOUT_SECONDS)
+
     encrypted_flag = encrypt_pcbc(KEY, IV, FLAG)
     
     print(f"Encrypted flag: {encrypted_flag.hex()}")
@@ -97,6 +108,8 @@ def main():
             
         except ValueError:
             print("Error: Invalid hex string.")
+        except EOFError:
+            break
         except Exception as e:
             print("An error occurred.")
 

@@ -122,7 +122,7 @@ _prga_loop:
     jnz _prga_continue      + + 253,254,255
     ; (just exit)
     ; \n will be embedded in the text i guess
-    hlt (0)                 + dup,push,pop              ; unfortunately cant be constrained
+    hlt (0)                 + dup,rot,pop              ; unfortunately cant be constrained
 _prga_continue:
     rot
     xor                     + add,mul,and               ; intentionally force rc4 recognition

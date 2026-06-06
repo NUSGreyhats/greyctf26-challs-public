@@ -6,4 +6,5 @@ services:
     container_name: sable
     ports:
       - "38267:38267"
+    cpus: 2
     restart: unless-stopped

@@ -6,6 +6,9 @@ babyRSA
 
 Crypto challenges in the big 26 :skull:
 
+# Tags
+- crypto
+
 # Author
 
 hadnot

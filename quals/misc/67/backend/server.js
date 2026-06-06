@@ -270,6 +270,8 @@ function verificationFailureCode(key, detail = "") {
 const SNAPSHOT_CHALLENGES = {
   enabled: parseBoolean(process.env.SNAPSHOT_CHALLENGES, true),
   minRequired: Number(process.env.SNAPSHOT_MIN_REQUIRED || "10"),
+  maxMissingHands: parseOptionalInteger(process.env.SNAPSHOT_MAX_MISSING_HANDS),
+  maxMissingHandRatio: Number(process.env.SNAPSHOT_MAX_MISSING_HAND_RATIO || "0.1"),
   startDelayMs: Number(process.env.SNAPSHOT_START_DELAY_MS || "2500"),
   minIntervalMs: Number(process.env.SNAPSHOT_MIN_INTERVAL_MS || "4500"),
   maxIntervalMs: Number(process.env.SNAPSHOT_MAX_INTERVAL_MS || "9000"),
@@ -428,6 +430,8 @@ const server = createServer(async (request, response) => {
           enabled: SNAPSHOT_CHALLENGES.enabled,
           minRequired: SNAPSHOT_CHALLENGES.minRequired,
           deadlineMs: SNAPSHOT_CHALLENGES.deadlineMs,
+          maxMissingHands: SNAPSHOT_CHALLENGES.maxMissingHands,
+          maxMissingHandRatio: SNAPSHOT_CHALLENGES.maxMissingHandRatio,
         },
         snapshotLandmarks: {
           mode: SNAPSHOT_LANDMARKS.mode,
@@ -581,6 +585,7 @@ class GameSocket {
     this.pendingSnapshotChallenges = new Map();
     this.nextSnapshotChallengeAt = Infinity;
     this.runHasHandSamples = false;
+    this.finishReceived = false;
     this.videoFrameSeq = 0;
     this.pendingVideoFrameTasks = new Set();
 
@@ -605,6 +610,8 @@ class GameSocket {
           enabled: SNAPSHOT_CHALLENGES.enabled,
           minRequired: SNAPSHOT_CHALLENGES.minRequired,
           deadlineMs: SNAPSHOT_CHALLENGES.deadlineMs,
+          maxMissingHands: SNAPSHOT_CHALLENGES.maxMissingHands,
+          maxMissingHandRatio: SNAPSHOT_CHALLENGES.maxMissingHandRatio,
         },
         snapshotLandmarks: {
           mode: SNAPSHOT_LANDMARKS.mode,
@@ -762,12 +769,16 @@ class GameSocket {
     this.pendingSnapshotChallenges = new Map();
     this.nextSnapshotChallengeAt = Infinity;
     this.runHasHandSamples = false;
+    this.finishReceived = false;
     this.videoFrameSeq = 0;
     this.pendingVideoFrameTasks = new Set();
   }
 
   /** Append a replayable input event while CLIENT_SIM is active. */
   recordRunEvent(message) {
+    if (this.finishReceived) {
+      return;
+    }
     const receivedAtMs = performance.now() - this.runStartPerf;
     const atMs = Number.isFinite(message.traceAtMs)
       ? clamp(message.traceAtMs, 0, 600000)
@@ -789,6 +800,9 @@ class GameSocket {
   }
 
   recordSnapshotResponse(message) {
+    if (this.finishReceived) {
+      return;
+    }
     const receivedAtMs = performance.now() - this.runStartPerf;
     const atMs = Number.isFinite(message.traceAtMs)
       ? clamp(message.traceAtMs, 0, 600000)
@@ -826,6 +840,9 @@ class GameSocket {
   }
 
   recordVideoFrame(message) {
+    if (this.finishReceived) {
+      return;
+    }
     const receivedAtMs = performance.now() - this.runStartPerf;
     const atMs = Number.isFinite(message.traceAtMs)
       ? clamp(message.traceAtMs, 0, VIDEO_VERIFY.maxFrameMs)
@@ -877,6 +894,7 @@ class GameSocket {
         entry.landmarkMessage = error?.message || "server video landmark extraction failed.";
       })
       .finally(() => {
+        delete entry.image.dataUrl;
         this.pendingVideoFrameTasks.delete(task);
       });
     this.pendingVideoFrameTasks.add(task);
@@ -889,11 +907,17 @@ class GameSocket {
     await Promise.allSettled([...this.pendingVideoFrameTasks]);
   }
 
+  stopSnapshotChallenges() {
+    this.pendingSnapshotChallenges.clear();
+    this.nextSnapshotChallengeAt = Infinity;
+  }
+
   maybeIssueSnapshotChallenge(now = performance.now()) {
     if (
       !SNAPSHOT_CHALLENGES.enabled ||
       !this.clientSim ||
       !this.runHasHandSamples ||
+      this.finishReceived ||
       this.closed
     ) {
       return;
@@ -945,6 +969,9 @@ class GameSocket {
 
   /** Replay the session log when claimed score exceeds VERIFY_SCORE_THRESHOLD. */
   async handleFinish(message) {
+    this.finishReceived = true;
+    this.stopSnapshotChallenges();
+
     const claimedScore = clampInteger(message.score, 0, WIN_SCORE);
     if (claimedScore <= VERIFY_SCORE_THRESHOLD) {
       this.send({
@@ -1929,8 +1956,11 @@ class GameSession {
 
     const snapshotsById = new Map(snapshots.map((snapshot) => [snapshot.id, snapshot]));
     const seenHashes = new Set();
-    let acceptedLandmarkSnapshots = 0;
+    const requiredHandSnapshots = requiredSnapshotHandCount(challenges.length);
+    const requiresLandmarks = SNAPSHOT_LANDMARKS.mode === "required";
+    let acceptedHandSnapshots = 0;
     let lastLandmarkVerdict = null;
+    let lastClientHandVerdict = null;
     for (const challenge of challenges) {
       const snapshot = snapshotsById.get(challenge.id);
       if (!snapshot) {
@@ -1959,10 +1989,9 @@ class GameSession {
       }
 
       const landmarkVerdict = await auditSnapshotLandmarks(snapshot);
+      const landmarkAccepted = !landmarkVerdict;
       if (landmarkVerdict) {
         lastLandmarkVerdict = landmarkVerdict;
-      } else {
-        acceptedLandmarkSnapshots += 1;
       }
 
       if (seenHashes.has(snapshot.image.hash)) {
@@ -1975,18 +2004,22 @@ class GameSession {
         !Number.isFinite(snapshot.leftY) ||
         !Number.isFinite(snapshot.rightY)
       ) {
-        return cameraTraceBlocked("snapshot", "live camera snapshot did not include two tracked hands.");
+        lastClientHandVerdict = cameraTraceBlocked(
+          "snapshot",
+          "live camera snapshot did not include two tracked hands.",
+        );
+        continue;
       }
 
+      if (!requiresLandmarks || landmarkAccepted) {
+        acceptedHandSnapshots += 1;
+      }
     }
 
-    if (
-      SNAPSHOT_LANDMARKS.mode === "required" &&
-      SNAPSHOT_LANDMARKS.serviceUrl &&
-      acceptedLandmarkSnapshots < SNAPSHOT_CHALLENGES.minRequired
-    ) {
+    if (acceptedHandSnapshots < requiredHandSnapshots) {
       return (
         lastLandmarkVerdict ||
+        lastClientHandVerdict ||
         cameraTraceBlocked("landmark", "not enough live camera snapshots produced two-hand landmarks.")
       );
     }
@@ -2881,51 +2914,81 @@ async function auditSnapshotLandmarks(snapshot) {
   return null;
 }
 
+class Semaphore {
+  constructor(max) {
+    this.max = max;
+    this.active = 0;
+    this.waiting = [];
+  }
+  async acquire() {
+    if (this.active < this.max) {
+      this.active++;
+      return;
+    }
+    return new Promise((resolve) => this.waiting.push(resolve));
+  }
+  release() {
+    if (this.waiting.length > 0) {
+      const resolve = this.waiting.shift();
+      resolve();
+    } else {
+      this.active--;
+    }
+  }
+}
+
+const landmarkSemaphore = new Semaphore(8);
+
 async function extractSnapshotLandmarks(snapshot) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), SNAPSHOT_LANDMARKS.timeoutMs);
+  await landmarkSemaphore.acquire();
   try {
-    const response = await fetch(SNAPSHOT_LANDMARKS.serviceUrl, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        challengeId: snapshot.id,
-        image: snapshot.image.dataUrl,
-        width: snapshot.image.width,
-        height: snapshot.image.height,
-      }),
-      signal: controller.signal,
-    });
-    if (!response.ok) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), SNAPSHOT_LANDMARKS.timeoutMs);
+    try {
+      const response = await fetch(SNAPSHOT_LANDMARKS.serviceUrl, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          challengeId: snapshot.id,
+          image: snapshot.image.dataUrl,
+          width: snapshot.image.width,
+          height: snapshot.image.height,
+        }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        return {
+          ok: false,
+          message: `server-side landmark extractor returned HTTP ${response.status}.`,
+        };
+      }
+
+      const payload = await response.json();
+      const normalized = normalizeExtractedLandmarks(payload);
+      if (!normalized) {
+        return {
+          ok: false,
+          message: "server-side landmark extractor returned no usable hand anchors.",
+        };
+      }
+
+      return {
+        ok: true,
+        ...normalized,
+      };
+    } catch (error) {
       return {
         ok: false,
-        message: `server-side landmark extractor returned HTTP ${response.status}.`,
+        message:
+          error.name === "AbortError"
+            ? "server-side landmark extractor timed out."
+            : "server-side landmark extractor failed.",
       };
+    } finally {
+      clearTimeout(timeout);
     }
-
-    const payload = await response.json();
-    const normalized = normalizeExtractedLandmarks(payload);
-    if (!normalized) {
-      return {
-        ok: false,
-        message: "server-side landmark extractor returned no usable hand anchors.",
-      };
-    }
-
-    return {
-      ok: true,
-      ...normalized,
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      message:
-        error.name === "AbortError"
-          ? "server-side landmark extractor timed out."
-          : "server-side landmark extractor failed.",
-    };
   } finally {
-    clearTimeout(timeout);
+    landmarkSemaphore.release();
   }
 }
 
@@ -3176,6 +3239,14 @@ function clampInteger(value, min, max) {
   return Math.round(clamp(value, min, max));
 }
 
+function parseOptionalInteger(value) {
+  if (value === undefined || value === "") {
+    return null;
+  }
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? Math.floor(parsed) : null;
+}
+
 function normalizedOrNull(value) {
   return Number.isFinite(value) ? clamp(value, 0, 1) : null;
 }
@@ -3189,4 +3260,21 @@ function parseBoolean(value, fallback) {
     return fallback;
   }
   return ["1", "true", "yes", "on"].includes(value.toLowerCase());
+}
+
+function maxMissingSnapshotHands(total) {
+  if (!Number.isFinite(total) || total <= 0) {
+    return 0;
+  }
+  if (Number.isFinite(SNAPSHOT_CHALLENGES.maxMissingHands)) {
+    return Math.min(total, Math.max(0, SNAPSHOT_CHALLENGES.maxMissingHands));
+  }
+  const ratio = Number.isFinite(SNAPSHOT_CHALLENGES.maxMissingHandRatio)
+    ? clamp(SNAPSHOT_CHALLENGES.maxMissingHandRatio, 0, 1)
+    : 0;
+  return Math.floor(total * ratio);
+}
+
+function requiredSnapshotHandCount(total) {
+  return Math.max(0, total - maxMissingSnapshotHands(total));
 }

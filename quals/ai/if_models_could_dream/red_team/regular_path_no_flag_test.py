@@ -49,7 +49,7 @@ def assert_no_payload(model: dict, digest: str, prefix: list[int], label: str) -
     belief, _, _, _ = observe_prefix(2026, prefix)
     if belief.correct_history:
         raise SystemExit(f"{label} entered the exploration-conditioned branch")
-    dream_suffix = suffix(int(model["rssm"]["horizon"]))
+    dream_suffix = suffix(int(model["rssm"]["rollout_steps"]))
     for sample in range(256):
         steps = rollout_steps(model, belief, dream_suffix, sample_index=sample)
         candidate = decode_candidate(steps)

@@ -1,2 +1,6 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 numpy>=1.26,<3
-torch==2.9.0+cpu
+# Linux CPU wheels use PyTorch's +cpu local version on the CPU index.
+torch==2.9.0+cpu; platform_system == "Linux"
+# macOS PyTorch wheels are non-CUDA CPU/MPS builds and do not use +cpu suffixes.
+torch==2.9.0; platform_system == "Darwin"
