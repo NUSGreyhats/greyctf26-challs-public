@@ -1,0 +1,19 @@
+# docker buildx build -f Dockerfile.build --target export --output type=local,dest=. .
+FROM ubuntu:26.04 AS build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    g++ \
+    ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY chall.cpp .
+
+RUN g++ chall.cpp -o chall \
+    -std=c++20 \
+    -fno-pie \
+    -no-pie \
+    -Wl,-z,relro,-z,now
+
+FROM scratch AS export
+COPY --from=build /src/chall /chall

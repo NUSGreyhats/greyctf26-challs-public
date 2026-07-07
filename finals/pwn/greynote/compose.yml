@@ -1,0 +1,23 @@
+services:
+  challenge:
+    container_name: pwn-greynote
+    build: service
+    cpus: "2.0"
+    mem_limit: 1536m
+    pids_limit: 256
+    restart: unless-stopped
+    stop_grace_period: 10s
+    environment:
+      POW_DIFFICULTY: "113373"
+      MAX_CHILDREN: "2"
+      SESSION_TIMEOUT: "300"
+      QEMU_TIMEOUT: "300"
+      QEMU_MEMORY: "512M"
+      QEMU_SMP: "2"
+    ports:
+      - "31367:31367"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

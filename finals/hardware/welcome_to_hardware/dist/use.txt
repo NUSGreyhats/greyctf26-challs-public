@@ -1,0 +1,7 @@
+this is the reusable firmware for you to flash even after you go back home
+pip install esptool
+esptool.py -p <port> write_flash 0x0 greyflag_merged.bin
+
+then connect over USB to start the challenges:
+pip install esp-idf-monitor
+python -m esp_idf_monitor <port>     (<port> = /dev/ttyACM0 on Linux, COMx on Windows; exit with Ctrl-])

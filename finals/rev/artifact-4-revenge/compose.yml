@@ -1,0 +1,29 @@
+services:
+  challenge:
+    container_name: pwn-artifact-4-revenge
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    ports:
+      - "31167:31167"
+    environment:
+      PORT: "31167"
+      SESSION_TIMEOUT: "180"
+      MAX_CHILDREN: "16"
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    cpus: "1.0"
+    mem_limit: 256m
+    pids_limit: 80
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

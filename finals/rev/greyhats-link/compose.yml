@@ -1,0 +1,25 @@
+services:
+  challenge:
+    build: service
+    image: greyhats-link:latest
+    ports:
+      - "32067:80"
+    environment:
+      FLAG: "${FLAG:-grey{i_love_luanear_algebra_UUID}}"
+    mem_limit: 256m
+    cpus: 0.5
+    init: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

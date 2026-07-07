@@ -1,0 +1,3 @@
+# Matplotlib is required for visual local play. Use --no-render for terminal-only use.
+matplotlib
+PySide6

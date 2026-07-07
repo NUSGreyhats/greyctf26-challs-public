@@ -1,0 +1,23 @@
+services:
+  rubikscube:
+    build:
+      context: ./chall
+      dockerfile: Dockerfile
+    image: rubikscube:latest
+    environment:
+      CTFD_URL: ${CTFD_URL:-https://ctfd.nusgreyhats.org}
+      CTFD_API_TOKEN: ${CTFD_API_TOKEN:-}
+      CTFD_TEAM_TOKEN_CHALLENGE_ID: ${CTFD_TEAM_TOKEN_CHALLENGE_ID:-}
+      CTFD_TEAM_TOKEN_PLUGIN_SECRET: ${CTFD_TEAM_TOKEN_PLUGIN_SECRET:-60}
+      CTFD_RESOLVE_URL: /plugins/team-token/api/v1/resolve
+      CTFD_SCORE_URL: ${CTFD_SCORE_URL:-}
+      CTFD_AWARD_CATEGORY: "Blind Devil"
+      PORT: 35167 
+      SOCAT_CLOSE_TIMEOUT: ${SOCAT_CLOSE_TIMEOUT:-20}
+      SOCAT_IDLE_TIMEOUT: ${SOCAT_IDLE_TIMEOUT:-1800}
+      SOCAT_MAX_CHILDREN: ${SOCAT_MAX_CHILDREN:-16}
+    ports:
+      - "35167:35167"
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0

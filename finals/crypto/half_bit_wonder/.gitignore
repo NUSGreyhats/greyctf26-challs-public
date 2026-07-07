@@ -1,0 +1,5 @@
+secret.py
+chall/private.json
+*.sage.py
+__pycache__/
+.DS_Store

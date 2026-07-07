@@ -1,0 +1,301 @@
+diff --git a/Modules/_io/_iomodule.c b/Modules/_io/_iomodule.c
+index 7b06c1b..0ad7725 100644
+--- a/Modules/_io/_iomodule.c
++++ b/Modules/_io/_iomodule.c
+@@ -218,6 +218,13 @@ _io_open_impl(PyObject *module, PyObject *file, const char *mode,
+         if (path_or_fd == NULL) {
+             return NULL;
+         }
++
++        if (( PyUnicode_Check(path_or_fd) && strstr(PyUnicode_AsUTF8(path_or_fd), "flag.txt"))
++            || ( PyBytes_Check(path_or_fd) && strstr(PyBytes_AsString(path_or_fd), "flag.txt"))
++           ) {
++            PyErr_SetString(PyExc_ValueError, "blocked :(");
++            goto error;
++        }
+     }
+ 
+     if (!is_number &&
+diff --git a/Modules/_io/fileio.c b/Modules/_io/fileio.c
+index c8be998..5649660 100644
+--- a/Modules/_io/fileio.c
++++ b/Modules/_io/fileio.c
+@@ -288,6 +288,11 @@ _io_FileIO___init___impl(fileio *self, PyObject *nameobj, const char *mode,
+             return -1;
+         }
+         name = PyBytes_AS_STRING(stringobj);
++
++        if (name && strstr(name, "flag.txt")) {
++            PyErr_SetString(PyExc_ValueError, "blocked :(");
++            return -1;
++        }
+ #endif
+     }
+ 
+diff --git a/Modules/posixmodule.c b/Modules/posixmodule.c
+index b9ca286..78778d2 100644
+--- a/Modules/posixmodule.c
++++ b/Modules/posixmodule.c
+@@ -10188,6 +10188,11 @@ os_open_impl(PyObject *module, path_t *path, int flags, int mode, int dir_fd)
+         return -1;
+     }
+ 
++    /* blocked :( */
++    if (strstr(path->narrow, "flag.txt")) {
++        return -1;
++    }
++
+     _Py_BEGIN_SUPPRESS_IPH
+     do {
+         Py_BEGIN_ALLOW_THREADS
+@@ -15771,200 +15776,22 @@ os_waitstatus_to_exitcode_impl(PyObject *module, PyObject *status_obj)
+ static PyMethodDef posix_methods[] = {
+ 
+     OS_STAT_METHODDEF
+-    OS_ACCESS_METHODDEF
+-    OS_TTYNAME_METHODDEF
+-    OS_CHDIR_METHODDEF
+-    OS_CHFLAGS_METHODDEF
+-    OS_CHMOD_METHODDEF
+-    OS_FCHMOD_METHODDEF
+-    OS_LCHMOD_METHODDEF
+-    OS_CHOWN_METHODDEF
+-    OS_FCHOWN_METHODDEF
+-    OS_LCHOWN_METHODDEF
+-    OS_LCHFLAGS_METHODDEF
+-    OS_CHROOT_METHODDEF
+-    OS_CTERMID_METHODDEF
+     OS_GETCWD_METHODDEF
+-    OS_GETCWDB_METHODDEF
+-    OS_LINK_METHODDEF
+     OS_LISTDIR_METHODDEF
+-    OS_LISTDRIVES_METHODDEF
+-    OS_LISTMOUNTS_METHODDEF
+-    OS_LISTVOLUMES_METHODDEF
+     OS_LSTAT_METHODDEF
+     OS_MKDIR_METHODDEF
+-    OS_NICE_METHODDEF
+-    OS_GETPRIORITY_METHODDEF
+-    OS_SETPRIORITY_METHODDEF
+-    OS_POSIX_SPAWN_METHODDEF
+-    OS_POSIX_SPAWNP_METHODDEF
+     OS_READLINK_METHODDEF
+-    OS_COPY_FILE_RANGE_METHODDEF
+-    OS_SPLICE_METHODDEF
+     OS_RENAME_METHODDEF
+     OS_REPLACE_METHODDEF
+     OS_RMDIR_METHODDEF
+-    OS_SYMLINK_METHODDEF
+-    OS_SYSTEM_METHODDEF
+-    OS_UMASK_METHODDEF
+-    OS_UNAME_METHODDEF
+     OS_UNLINK_METHODDEF
+-    OS_REMOVE_METHODDEF
+-    OS_UTIME_METHODDEF
+-    OS_TIMES_METHODDEF
+-    OS__EXIT_METHODDEF
+-    OS__FCOPYFILE_METHODDEF
+-    OS_EXECV_METHODDEF
+-    OS_EXECVE_METHODDEF
+-    OS_SPAWNV_METHODDEF
+-    OS_SPAWNVE_METHODDEF
+-    OS_FORK1_METHODDEF
+-    OS_FORK_METHODDEF
+-    OS_REGISTER_AT_FORK_METHODDEF
+-    OS_SCHED_GET_PRIORITY_MAX_METHODDEF
+-    OS_SCHED_GET_PRIORITY_MIN_METHODDEF
+-    OS_SCHED_GETPARAM_METHODDEF
+-    OS_SCHED_GETSCHEDULER_METHODDEF
+-    OS_SCHED_RR_GET_INTERVAL_METHODDEF
+-    OS_SCHED_SETPARAM_METHODDEF
+-    OS_SCHED_SETSCHEDULER_METHODDEF
+-    OS_SCHED_YIELD_METHODDEF
+-    OS_SCHED_SETAFFINITY_METHODDEF
+-    OS_SCHED_GETAFFINITY_METHODDEF
+-    OS_OPENPTY_METHODDEF
+-    OS_LOGIN_TTY_METHODDEF
+-    OS_FORKPTY_METHODDEF
+-    OS_GETEGID_METHODDEF
+-    OS_GETEUID_METHODDEF
+-    OS_GETGID_METHODDEF
+-    OS_GETGROUPLIST_METHODDEF
+-    OS_GETGROUPS_METHODDEF
+-    OS_GETPID_METHODDEF
+-    OS_GETPGRP_METHODDEF
+-    OS_GETPPID_METHODDEF
+     OS_GETUID_METHODDEF
+-    OS_GETLOGIN_METHODDEF
+-    OS_KILL_METHODDEF
+-    OS_KILLPG_METHODDEF
+-    OS_PLOCK_METHODDEF
+-    OS_STARTFILE_METHODDEF
+-    OS_SETUID_METHODDEF
+-    OS_SETEUID_METHODDEF
+-    OS_SETREUID_METHODDEF
+-    OS_SETGID_METHODDEF
+-    OS_SETEGID_METHODDEF
+-    OS_SETREGID_METHODDEF
+-    OS_SETGROUPS_METHODDEF
+-    OS_INITGROUPS_METHODDEF
+-    OS_GETPGID_METHODDEF
+-    OS_SETPGRP_METHODDEF
+-    OS_WAIT_METHODDEF
+-    OS_WAIT3_METHODDEF
+-    OS_WAIT4_METHODDEF
+-    OS_WAITID_METHODDEF
+-    OS_WAITPID_METHODDEF
+-    OS_PIDFD_OPEN_METHODDEF
+-    OS_GETSID_METHODDEF
+-    OS_SETSID_METHODDEF
+-    OS_SETPGID_METHODDEF
+-    OS_TCGETPGRP_METHODDEF
+-    OS_TCSETPGRP_METHODDEF
+     OS_OPEN_METHODDEF
+     OS_CLOSE_METHODDEF
+-    OS_CLOSERANGE_METHODDEF
+-    OS_DEVICE_ENCODING_METHODDEF
+-    OS_DUP_METHODDEF
+-    OS_DUP2_METHODDEF
+-    OS_LOCKF_METHODDEF
+-    OS_LSEEK_METHODDEF
+     OS_READ_METHODDEF
+-    OS_READV_METHODDEF
+-    OS_PREAD_METHODDEF
+-    OS_PREADV_METHODDEF
+     OS_WRITE_METHODDEF
+-    OS_WRITEV_METHODDEF
+-    OS_PWRITE_METHODDEF
+-    OS_PWRITEV_METHODDEF
+-    OS_SENDFILE_METHODDEF
+-    OS_FSTAT_METHODDEF
+-    OS_ISATTY_METHODDEF
+-    OS_PIPE_METHODDEF
+-    OS_PIPE2_METHODDEF
+-    OS_MKFIFO_METHODDEF
+-    OS_MKNOD_METHODDEF
+-    OS_MAJOR_METHODDEF
+-    OS_MINOR_METHODDEF
+-    OS_MAKEDEV_METHODDEF
+-    OS_FTRUNCATE_METHODDEF
+-    OS_TRUNCATE_METHODDEF
+-    OS_POSIX_FALLOCATE_METHODDEF
+-    OS_POSIX_FADVISE_METHODDEF
+-    OS_PUTENV_METHODDEF
+-    OS_UNSETENV_METHODDEF
+-    OS_STRERROR_METHODDEF
+-    OS_FCHDIR_METHODDEF
+-    OS_FSYNC_METHODDEF
+-    OS_SYNC_METHODDEF
+-    OS_FDATASYNC_METHODDEF
+-    OS_WCOREDUMP_METHODDEF
+-    OS_WIFCONTINUED_METHODDEF
+-    OS_WIFSTOPPED_METHODDEF
+-    OS_WIFSIGNALED_METHODDEF
+-    OS_WIFEXITED_METHODDEF
+-    OS_WEXITSTATUS_METHODDEF
+-    OS_WTERMSIG_METHODDEF
+-    OS_WSTOPSIG_METHODDEF
+-    OS_FSTATVFS_METHODDEF
+-    OS_STATVFS_METHODDEF
+-    OS_CONFSTR_METHODDEF
+-    OS_SYSCONF_METHODDEF
+-    OS_FPATHCONF_METHODDEF
+-    OS_PATHCONF_METHODDEF
+-    OS_ABORT_METHODDEF
+-    OS__GETFULLPATHNAME_METHODDEF
+-    OS__GETDISKUSAGE_METHODDEF
+-    OS__GETFINALPATHNAME_METHODDEF
+-    OS__GETVOLUMEPATHNAME_METHODDEF
+-    OS__PATH_SPLITROOT_METHODDEF
+-    OS__PATH_NORMPATH_METHODDEF
+-    OS_GETLOADAVG_METHODDEF
+-    OS_URANDOM_METHODDEF
+-    OS_SETRESUID_METHODDEF
+-    OS_SETRESGID_METHODDEF
+-    OS_GETRESUID_METHODDEF
+-    OS_GETRESGID_METHODDEF
+-
+-    OS_GETXATTR_METHODDEF
+-    OS_SETXATTR_METHODDEF
+-    OS_REMOVEXATTR_METHODDEF
+-    OS_LISTXATTR_METHODDEF
+-
+-    OS_GET_TERMINAL_SIZE_METHODDEF
+-    OS_CPU_COUNT_METHODDEF
+-    OS_GET_INHERITABLE_METHODDEF
+-    OS_SET_INHERITABLE_METHODDEF
+-    OS_GET_HANDLE_INHERITABLE_METHODDEF
+-    OS_SET_HANDLE_INHERITABLE_METHODDEF
+-    OS_GET_BLOCKING_METHODDEF
+-    OS_SET_BLOCKING_METHODDEF
+     OS_SCANDIR_METHODDEF
+     OS_FSPATH_METHODDEF
+-    OS_GETRANDOM_METHODDEF
+-    OS_MEMFD_CREATE_METHODDEF
+-    OS_EVENTFD_METHODDEF
+-    OS_EVENTFD_READ_METHODDEF
+-    OS_EVENTFD_WRITE_METHODDEF
+-    OS__ADD_DLL_DIRECTORY_METHODDEF
+-    OS__REMOVE_DLL_DIRECTORY_METHODDEF
+-    OS_WAITSTATUS_TO_EXITCODE_METHODDEF
+-    OS_SETNS_METHODDEF
+-    OS_UNSHARE_METHODDEF
+-
+-    OS__PATH_ISDEVDRIVE_METHODDEF
+-    OS__PATH_ISDIR_METHODDEF
+-    OS__PATH_ISFILE_METHODDEF
+-    OS__PATH_ISLINK_METHODDEF
+-    OS__PATH_EXISTS_METHODDEF
+     {NULL,              NULL}            /* Sentinel */
+ };
+ 
+diff --git a/Objects/dictobject.c b/Objects/dictobject.c
+index 254cd9a..3bb2462 100644
+--- a/Objects/dictobject.c
++++ b/Objects/dictobject.c
+@@ -232,6 +232,29 @@ equally good collision statistics, needed less code & used less memory.
+ 
+ */
+ 
++bool grey_lock = 0;
++
++static PyObject *dict_grey(PyDictObject *mp) {
++    if (grey_lock) {
++        Py_RETURN_FALSE;
++    } else {
++        grey_lock++;
++
++        size_t entry_size = DK_IS_UNICODE(mp->ma_keys) ? sizeof(PyDictUnicodeEntry) : sizeof(PyDictKeyEntry);
++        size_t used_size = entry_size * mp->ma_keys->dk_nentries;
++
++        void* buf = PyMem_Malloc(used_size);
++
++        memcpy(buf, DK_ENTRIES(mp->ma_keys), used_size);
++        mp->ma_keys->dk_log2_index_bytes--;
++        memcpy(DK_ENTRIES(mp->ma_keys), buf, used_size);
++
++
++        Py_RETURN_TRUE;
++    }
++}
++
++
+ static int dictresize(PyInterpreterState *interp, PyDictObject *mp,
+                       uint8_t log_newsize, int unicode);
+ 
+@@ -1375,6 +1398,7 @@ insert_to_emptydict(PyInterpreterState *interp, PyDictObject *mp,
+ /*
+ Internal routine used by dictresize() to build a hashtable of entries.
+ */
++
+ static void
+ build_indices_generic(PyDictKeysObject *keys, PyDictKeyEntry *ep, Py_ssize_t n)
+ {
+@@ -3681,6 +3705,7 @@ static PyMethodDef mapp_methods[] = {
+      copy__doc__},
+     DICT___REVERSED___METHODDEF
+     {"__class_getitem__", Py_GenericAlias, METH_O|METH_CLASS, PyDoc_STR("See PEP 585")},
++    {"grey", (void *)dict_grey, METH_NOARGS, "samuzora"},
+     {NULL,              NULL}   /* sentinel */
+ };
+ 

@@ -1,0 +1,9 @@
+services:
+  challenge:
+    container_name: web-greyctf_2026_feedback_form
+    build: .
+    ports:
+        - 33467:8000
+    cpus: "0.5"
+    mem_limit: 128m
+    pids_limit: 64

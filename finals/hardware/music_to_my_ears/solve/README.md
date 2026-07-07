@@ -1,0 +1,1 @@
+AD3 -> WAVEGEN -> square wave -> 20kHz -> connect a wire to TP3

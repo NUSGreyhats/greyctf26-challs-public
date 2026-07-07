@@ -1,0 +1,20 @@
+services:
+  challenge:
+    container_name: web-shiny-notes
+    build: .
+    ports:
+      - "33167:443"
+    environment:
+      FLAG: "grey{fake_flag}"
+    mem_limit: 1g
+    cpus: 1.0
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

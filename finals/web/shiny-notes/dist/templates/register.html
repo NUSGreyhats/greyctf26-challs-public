@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block body %}
+  <h1>Register</h1>
+  <form id="authform" method="post" action="{{ url_for('register') }}">
+    <label for="username">Username</label>
+    <input type="text" id="username" autocomplete="off" autofocus>
+    <label for="password">Password</label>
+    <input type="password" id="password" autocomplete="off">
+    <input type="hidden" name="username" id="username_field">
+    <input type="hidden" name="key" id="key">
+    <button type="submit">Create account</button>
+  </form>
+  <p class="muted">Already have an account? <a href="{{ url_for('login') }}">Log in</a>.</p>
+  <p class="muted">The key is derived in your browser from username + password. There is no recovery.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+  (function () {
+    const form = document.getElementById("authform");
+    const uEl = document.getElementById("username");
+    const pEl = document.getElementById("password");
+    const uField = document.getElementById("username_field");
+    const kEl = document.getElementById("key");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const u = uEl.value.trim();
+      const p = pEl.value;
+      if (!u || !p) return;
+      kEl.value = await deriveKeyHex(u, p);
+      uField.value = b64encodeUtf8(u);
+      notesStore(u, p);
+      form.submit();
+    });
+  })();
+</script>
+{% endblock %}

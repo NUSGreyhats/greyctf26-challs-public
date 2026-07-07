@@ -1,0 +1,9 @@
+services:
+  challenge:
+    container_name: web-if_n00bcak_could_dream
+    build: service
+    ports:
+        - 33067:8000
+    cpus: "0.5"
+    mem_limit: 128m
+    pids_limit: 64

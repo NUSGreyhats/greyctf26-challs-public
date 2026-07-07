@@ -1,0 +1,55 @@
+services:
+  proxy:
+    container_name: pwn-cpp-bbq-proxy
+    build:
+      context: .
+      dockerfile: proxy/Dockerfile
+    image: pwn-cpp-bbq-proxy:latest
+    ports:
+      - "31067:1337"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      CTFD_RESOLVE_URL: "${CTFD_RESOLVE_URL:-http://host.docker.internal:8000/plugins/team-token/api/v1/resolve}"
+      TEAM_TOKEN_PLUGIN_SECRET: "${TEAM_TOKEN_PLUGIN_SECRET:-}"
+      EXPECTED_CHALLENGE_ID: "${EXPECTED_CHALLENGE_ID:-}"
+      CHALLENGE_HOST: "challenge"
+      CHALLENGE_PORT: "1337"
+      TOKEN_PROMPT_TIMEOUT: "30"
+      TOKEN_RESOLVE_TIMEOUT: "5"
+      DISABLE_TOKEN_CHECK: "${DISABLE_TOKEN_CHECK:-}"
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    cpus: 0.25
+    mem_limit: 128m
+    pids_limit: 64
+    restart: unless-stopped
+    depends_on:
+      - challenge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  challenge:
+    container_name: pwn-cpp-bbq
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    image: pwn-cpp-bbq:latest
+    expose:
+      - "1337"
+    privileged: true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

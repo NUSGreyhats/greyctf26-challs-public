@@ -1,0 +1,31 @@
+services:
+  enshittification-detector:
+    build:
+      context: .
+      dockerfile: chall/Dockerfile
+    image: enshittification-detector-chall
+    init: true
+    ports:
+      - "35067:5000"
+    environment:
+      MAX_CONTENT_LENGTH: "262144"
+      MAX_ISSUED_TEAMS: "512"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      TORCH_NUM_THREADS: "1"
+      TORCH_NUM_INTEROP_THREADS: "1"
+    cpus: "2.0"
+    mem_limit: 1g
+    pids_limit: 128
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

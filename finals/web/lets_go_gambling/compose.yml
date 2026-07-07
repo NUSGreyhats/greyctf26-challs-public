@@ -1,0 +1,34 @@
+services:
+  challenge:
+    container_name: web-lets_go_gambling
+    build: service
+    ports:
+      - "33267:33267"
+      - "33367:33367"
+    environment:
+      FLAG: "grey{omg_its_a_karambit_case_hardened_blue_gem}"
+      PUBLIC_IP: "challs.nusgreyhats.org"
+      PORT: "33267"
+      HTTP_PORT: "33367"
+      ETH_RPC_URL: "https://eth-mainnet.public.blastapi.io"
+      CONTRACT_DEPLOY_VALUE: "0"
+      PLAYER_VALUE: "10"
+      RPC_KILL_TIMEOUT: "600"
+      PER_SOURCE: "1"
+      CPS_RATE: "20"
+      CPS_DELAY: "5"
+      RLIMIT_CPU: "10"
+    cpus: "1.0"
+    mem_limit: 1g
+    pids_limit: 1024
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+

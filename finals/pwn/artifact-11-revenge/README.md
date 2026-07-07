@@ -1,0 +1,15 @@
+# Name
+
+artifact-11-revenge
+
+# Description
+
+Were you paying attention in class?
+
+# Author
+
+cewau
+
+# Flag
+
+`grey{bu+_t34ch3r_th15_w45_n0+_c0v3r3d_1n_cl455_acdf9c0db3fa012e}`

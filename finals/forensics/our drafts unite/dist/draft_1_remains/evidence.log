@@ -1,0 +1,9 @@
+Recovered evidence manifest
+===========================
+archive: broken_evidence.zip
+filename: a_life_to_love.png
+compression: ZIP deflate / raw DEFLATE stream
+uncompressed_size: 787840
+crc32: a5f66b45
+damage: central directory destroyed; local CRC and size fields zeroed
+note: the embedded PNG bytes are intact after decompression

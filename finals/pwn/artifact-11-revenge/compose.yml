@@ -1,0 +1,28 @@
+services:
+  challenge:
+    container_name: pwn-artifact-11-revenge
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    image: pwn-artifact-11-revenge:latest
+    ports:
+      - "31267:31267"
+    environment:
+      SESSION_RUNTIME: "120s"
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 128
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

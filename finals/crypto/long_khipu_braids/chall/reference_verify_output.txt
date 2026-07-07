@@ -1,0 +1,9 @@
+[setup] n,p,q0,t0 = 8 10000019 17 42
+[setup] d = 28
+[setup] secret word length = 96
+[setup] wrote finals/crypto/long_khipu_braids/dist/challenge.py
+[setup] wrote cord pictures under finals/crypto/long_khipu_braids/dist/cords
+[solver] B-system: nullity=1, rank=783, rows_processed=783
+[solver] A-system: nullity=1, rank=783, rows_processed=783
+[result] plaintext: grey{kn0t5_BiNd_s3CreTs_w1Th0Ut_w0rdZ_0ops_1_t1nK_i_Ti3D_mY_h4Ndz_2gether...}
+[verify] success

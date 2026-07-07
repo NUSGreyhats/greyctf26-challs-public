@@ -1,0 +1,6 @@
+services:
+  grey-dictionary:
+    build: .
+    privileged: true
+    ports:
+      - 31467:5000

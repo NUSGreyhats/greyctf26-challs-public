@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Notes{% endblock %}</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 40rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.5;
+    }
+    h1 { font-size: 1.4rem; }
+    label { display: block; margin: 0.75rem 0 0.25rem; font-weight: 600; }
+    input[type=text], input[type=password], textarea {
+      width: 100%; padding: 0.5rem; font: inherit; box-sizing: border-box;
+      border: 1px solid #8888; border-radius: 6px; background: transparent; color: inherit;
+    }
+    textarea { min-height: 16rem; resize: vertical; }
+    button {
+      margin-top: 1rem; padding: 0.5rem 1rem; font: inherit; cursor: pointer;
+      border: 1px solid #8888; border-radius: 6px; background: #8881; color: inherit;
+    }
+    .flash { padding: 0.5rem 0.75rem; border-radius: 6px; background: #f0db8055; margin: 0.5rem 0; }
+    .muted { color: #888; font-size: 0.9rem; }
+    nav { display: flex; justify-content: space-between; align-items: center; }
+    a { color: inherit; }
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages() %}
+    {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% block body %}{% endblock %}
+  <script>
+    const NOTES_KDF_ITERATIONS = 200000;
+    const NOTES_SALT_PREFIX = "varnished-notes:v1:";
+    async function deriveKeyHex(username, password) {
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey(
+        "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveBits"]);
+      const bits = await crypto.subtle.deriveBits(
+        { name: "PBKDF2", salt: enc.encode(NOTES_SALT_PREFIX + username), iterations: NOTES_KDF_ITERATIONS, hash: "SHA-256" },
+        baseKey, 256);
+      return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+    function notesStore(username, password) {
+      localStorage.setItem("notes_username", username);
+      localStorage.setItem("notes_password", password);
+    }
+    function notesClear() {
+      localStorage.removeItem("notes_username");
+      localStorage.removeItem("notes_password");
+    }
+    function hexToBytes(hex) {
+      const out = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+      return out;
+    }
+    function b64encodeUtf8(text) {
+      let s = ""; for (const b of new TextEncoder().encode(text)) s += String.fromCharCode(b);
+      return btoa(s);
+    }
+    async function encryptField(keyHex, text) {
+      const key = await crypto.subtle.importKey("raw", hexToBytes(keyHex), { name: "AES-GCM" }, false, ["encrypt"]);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text)));
+      const blob = new Uint8Array(iv.length + ct.length);
+      blob.set(iv, 0); blob.set(ct, iv.length);
+      let s = ""; for (const b of blob) s += String.fromCharCode(b);
+      return btoa(s);
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

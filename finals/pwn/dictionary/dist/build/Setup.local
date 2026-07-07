@@ -1,0 +1,19 @@
+# disable unneeded modules
+
+*disabled*
+_asyncio
+_ctypes
+_posixsubprocess
+_multiprocessing
+_socket
+_pickle
+_posixshmem
+audioop
+fcntl
+grp
+pyexpat
+spwd
+syslog
+ossaudiodev
+mmap
+select

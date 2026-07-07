@@ -1,0 +1,29 @@
+services:
+  challenge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shiny-notes:latest
+    # Build-only: CTFd-Whale runs the real container in production. This compose
+    # exists so `docker compose build`/`up` produces the image; the entrypoint is
+    # overridden to exit immediately so the container does not stay alive and
+    # consume memory.
+    entrypoint: ["/bin/true"]
+    command: []
+    ports:
+      - "33167:443"
+    environment:
+      FLAG: "${FLAG:-grey{fake_flag}}"
+    mem_limit: 1g
+    cpus: 1.0
+    init: true
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

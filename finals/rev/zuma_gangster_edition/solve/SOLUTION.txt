@@ -1,0 +1,47 @@
+Ball chain (111 balls):
+  RROPPPPGBYYBRRRYROOPGGOBBBBGYPPGYYYPRBBYRRYOOOPGRROBBBBBBGBBORGGGGOYYYYPRRRRRROGGGGGBGGYROOBOOBPRRRRRBOOORPPBYY
+
+Groups in chain:
+  [ 0] pos   0-  1: Rx2 (need +1 to clear 3)  -> 00
+  [ 1] pos   3-  4: Yx2 (need +1 to clear 3)  -> 08
+  [ 2] pos   6-  7: Ox2 (need +1 to clear 3)  -> 48
+  [ 3] pos   9- 10: Gx2 (need +1 to clear 3)  -> 40
+  [ 4] pos  12- 13: Px2 (need +1 to clear 3)  -> 28
+  [ 5] pos  15- 16: Bx2 (need +1 to clear 3)  -> 20
+  [ 6] pos  18- 19: Rx2 (need +1 to clear 3)  -> 00
+  [ 7] pos  21- 22: Rx2 (need +1 to clear 3)  -> 00
+  [ 8] pos  24- 29: Bx6 (need +1 to clear 7)  -> 24a242
+  [ 9] pos  31- 34: Gx4 (need +1 to clear 5)  -> 42a4
+  [10] pos  36- 39: Yx4 (need +1 to clear 5)  -> 0a04
+  [11] pos  41- 46: Rx6 (need +1 to clear 7)  -> 04a0c0
+  [12] pos  48- 52: Gx5 (need +1 to clear 6)  -> 70b4
+  [13] pos  54- 55: Ox2 (need +1 to clear 3)  -> 48
+  [14] pos  57- 61: Rx5 (need +1 to clear 6)  -> 60b0
+  [15] pos  63- 65: Ox3 (need +1 to clear 4)  -> 58
+  [16] pos  67- 68: Px2 (need +1 to clear 3)  -> 28
+  [17] pos  70- 71: Yx2 (need +1 to clear 3)  -> 08
+
+Frog ammo (18 balls, 18 real + 0 filler):
+  R* Y* O* G* P* B* R* R* B* G* Y* R* G* O* R* O* P* Y*
+
+Intended solution:
+  ammo[ 0] R  -> CLEAR red x3  [00]
+  ammo[ 1] Y  -> CLEAR yellow x3  [08]
+  ammo[ 2] O  -> CLEAR orange x3  [48]
+  ammo[ 3] G  -> CLEAR green x3  [40]
+  ammo[ 4] P  -> CLEAR purple x3  [28]
+  ammo[ 5] B  -> CLEAR blue x3  [20]
+  ammo[ 6] R  -> CLEAR red x3  [00]
+  ammo[ 7] R  -> CLEAR red x3  [00]
+  ammo[ 8] B  -> CLEAR blue x7  [24a242]
+  ammo[ 9] G  -> CLEAR green x5  [42a4]
+  ammo[10] Y  -> CLEAR yellow x5  [0a04]
+  ammo[11] R  -> CLEAR red x7  [04a0c0]
+  ammo[12] G  -> CLEAR green x6  [70b4]
+  ammo[13] O  -> CLEAR orange x3  [48]
+  ammo[14] R  -> CLEAR red x6  [60b0]
+  ammo[15] O  -> CLEAR orange x4  [58]
+  ammo[16] P  -> CLEAR purple x3  [28]
+  ammo[17] Y  -> CLEAR yellow x3  [08]
+
+Total emission: 000848402820000024a24242a40a0404a0c070b44860b0582808 (26B)

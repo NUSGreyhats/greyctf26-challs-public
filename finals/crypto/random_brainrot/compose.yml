@@ -1,0 +1,26 @@
+services:
+  challenge:
+    container_name: crypto-random-brainrot
+    build:
+      context: service
+      dockerfile: Dockerfile
+    image: crypto-random-brainrot:latest
+    ports:
+      - "34067:34067"
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 128
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

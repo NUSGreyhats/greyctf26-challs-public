@@ -1,0 +1,14 @@
+**
+
+!chall/
+!chall/Dockerfile
+!chall/app.py
+!chall/audit_selection.py
+!chall/common.py
+!chall/real_flag.txt
+
+!dist/
+!dist/**
+
+!.dockerignore
+!compose.yml

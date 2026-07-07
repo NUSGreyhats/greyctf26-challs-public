@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Your note{% endblock %}
+{% block body %}
+  <nav>
+    <h1>{{ username }}'s note</h1>
+    <form id="logoutform" method="post" action="{{ url_for('logout') }}">
+      <button type="submit">Log out</button>
+    </form>
+  </nav>
+
+  <div id="note-view"></div>
+
+  <form id="noteform" method="post" action="{{ url_for('note') }}">
+    <label for="note">Note</label>
+    <textarea id="note">{{ note_edit }}</textarea>
+    <input type="hidden" name="enc_note" id="enc_note">
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById("note-view").innerHTML = {{ note_view | tojson }};
+  document.getElementById("logoutform").addEventListener("submit", notesClear);
+
+  const noteform = document.getElementById("noteform");
+  noteform.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const u = localStorage.getItem("notes_username") || "";
+    const p = localStorage.getItem("notes_password") || "";
+    const keyHex = await deriveKeyHex(u, p);
+    document.getElementById("enc_note").value = await encryptField(keyHex, document.getElementById("note").value);
+    noteform.submit();
+  });
+</script>
+{% endblock %}

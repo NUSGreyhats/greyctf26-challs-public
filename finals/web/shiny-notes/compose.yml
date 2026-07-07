@@ -1,0 +1,20 @@
+services:
+  challenge:
+    build: ./service
+    image: shiny-notes:latest
+    ports:
+      - "33167:443"
+    environment:
+      FLAG: "${FLAG:-grey{master_of_http_and_sql_smuggling_UUID}}"
+    mem_limit: 1g
+    cpus: 1.0
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
